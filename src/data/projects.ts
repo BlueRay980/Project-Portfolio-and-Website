@@ -306,6 +306,71 @@ export const projects: Project[] = [
   },
 
   {
+    slug: 'aero-design-space-points',
+    num: 3,
+    title: 'Aerodynamic design space against competition points',
+    role: 'Systems Engineering Lead',
+    category: 'Systems Engineering',
+    headline:
+      '357 lift and drag combinations scored across all four dynamic events. The best downforce level moves from Cl -4.5 to -4.1 when the assumed field changes, with nothing about the car changing.',
+    thumb: '/figures/aero-points-space.svg',
+    thumbAlt:
+      'Two heatmaps of total competition points over a grid of lift and drag coefficients, each with its optimum circled at a different lift coefficient.',
+    repo: null,
+    problem: [
+      'The aerodynamics group wants more downforce. Downforce costs drag, and drag costs acceleration and top speed. Asking which wins in lap time does not settle it, because a Formula SAE car is not scored on lap time. It is scored across four dynamic events with different point weightings, and each event is scored relative to the rest of the field rather than against an absolute standard.',
+      'So the real question is not what a count of downforce buys in seconds. It is what it buys in points, and that depends on what everyone else at the competition does. The design review needed the answer in that form.',
+    ],
+    myRole: [
+      'As Systems Engineering Lead I built the sweep, chose the two field assumptions to run it under, and produced the design space the aero decision was argued from.',
+    ],
+    approach: [
+      'I swept lift coefficient from -5.0 to -3.0 and drag coefficient from -1.8 to -1.0, which is 357 combinations covering the range the aero package could plausibly reach. For each combination the lap model runs all four dynamic events: acceleration, skidpad, autocross, and endurance.',
+      'Each event time is then converted to points using the competition scoring formulas, which need a reference time taken from the rest of the field, and the four event scores are summed. That conversion is the part that matters, because it is where a tenth of a second becomes worth a different number of points in each event.',
+      'Because every point total depends on an assumption about the other teams, I ran the whole sweep twice under two different fields: once with reference times drawn from the previous five years, and once against a field that is fast in autocross and slow in endurance. Only the autocross and endurance references differ between the two.',
+    ],
+    specs: [
+      { label: 'Design space', value: 'Cl -5.0 to -3.0, Cd -1.8 to -1.0, 357 combinations' },
+      { label: 'Events', value: 'Acceleration, skidpad, autocross, endurance' },
+      { label: 'Output', value: 'Event times, event scores, and total points at every grid point' },
+      { label: 'Field assumptions', value: 'Two, differing only in the autocross and endurance references' },
+    ],
+    figures: [
+      {
+        src: '/figures/aero-points-space.svg',
+        alt: 'Two heatmaps side by side, each showing total dynamic-event points over a grid of lift coefficient from -5.0 to -3.0 and drag coefficient from -1.8 to -1.0. The left panel, the five-year field baseline, spans 464.1 to 487.0 points with its optimum circled at lift coefficient -4.5 and drag coefficient -1.00. The right panel, a fast-autocross and slow-endurance field, spans 480.0 to 510.9 points with its optimum circled at lift coefficient -4.1 and the same drag coefficient. Both panels get brighter toward the low-drag edge.',
+        caption:
+          'The same 357 car configurations scored under two assumptions about the rest of the field. The optimum moves in lift coefficient and stays put in drag. Each panel carries its own colour scale, so the shades are not comparable between panels; the circled optima and the quoted numbers are. Drawn from the sweep output workbooks, which write Excel rather than plots.',
+      },
+    ],
+    callout: {
+      title: 'How much downforce is the right amount has no answer without an assumption about everyone else',
+      body: [
+        'Running the sweep twice was not a robustness check that happened to be interesting. It changed the recommendation.',
+        'Against a five-year field the best configuration carries lift coefficient -4.5. Against a field that is fast in autocross and slow in endurance, the best configuration carries -4.1. Same car, same 357 configurations, same lap model, same four events. The only thing that moved is what the other teams are assumed to do.',
+        'The sharper version of the same point is in the event scores. Under the five-year field, autocross returns exactly 125.00 points at all 357 grid points, which is its maximum. Across the entire aero design space, the autocross result is identical. That event carries no information about the aero choice at all, and anyone optimising aero against autocross under that assumption is reading noise. Under the other field it ranges from 97.09 to 114.11 and becomes one of the discriminating events.',
+        'Which events respond to a design change is a property of the field, not of the car. That is not a conclusion a lap time study can reach, and it is the reason this one is scored in points.',
+      ],
+    },
+    result: [
+      'Under the five-year field, total points across the design space run from 464.07 to 486.95, a spread of 22.88 points, with the best configuration at lift coefficient -4.5 and drag coefficient -1.00.',
+      'Under the fast-autocross and slow-endurance field, totals run from 479.99 to 510.89, a spread of 30.90 points, with the best configuration at lift coefficient -4.1 and the same drag coefficient.',
+      'Least drag wins under both assumptions. The lowest drag in the swept range is optimal in both panels, so across this whole design space the drag penalty outweighs the downforce gain at the margin. That is a cleaner answer than the downforce question gets, and it did not depend on the field at all.',
+      'Endurance carries the largest single share of the variation, moving about 13 points across the space under both assumptions, which is most of the total spread in the first case and about 40% of it in the second.',
+      'Acceleration and skidpad return identical score ranges in both runs, 47.63 to 54.16 and 66.46 to 75.00. That is the check that the two sweeps differ only where they were meant to, in the autocross and endurance references.',
+    ],
+    limitations: [
+      'The field references are assumptions, not measurements. Every point total here is conditional on them, which is the whole reason two were run rather than one. Treat the shape of the space and the direction of the optimum as more trustworthy than any absolute total.',
+      'The sweep treats every grid point as achievable. A real aero package has a drag polar: you cannot pick arbitrary downforce at arbitrary drag. So the optimum found here is a bound on what the aero group could choose, not a design they can go and build.',
+      'Two events saturate. Autocross sits at its maximum across the entire space under one assumption, and skidpad reaches its maximum over part of the space under both. Where a score is pinned, the gradient is zero and the optimum sits on a plateau rather than a peak, so a nearby configuration can be worth the same points.',
+      'The underlying lap times come from the quasi-steady point-mass model, so they carry its limits: no transient weight transfer, no suspension, no driver variation.',
+      'Endurance is modelled as a clean run. There is no fuel or energy limit, no tyre degradation, no traffic, and no penalties, all of which bite hardest in exactly the event that dominates the spread.',
+      'The total assumes the car finishes every event. A reliability failure is worth more points than anything on this chart, and no aero choice protects against one.',
+    ],
+    tools: ['MATLAB', 'Quasi-steady lap simulation', 'Python (openpyxl)', 'Excel'],
+  },
+
+  {
     slug: 'oat-sensitivity-study',
     num: 4,
     title: 'One-at-a-time parameter sensitivity study',
@@ -477,56 +542,69 @@ export const projects: Project[] = [
     tools: ['MATLAB', 'Python (numpy, scipy, openpyxl)', 'MoTeC i2 logging and analysis', 'Excel'],
   },
 
-  // ---------------------------------------------------------------------------
-  // Drafts. These three are on the plan roster but there is not enough written
-  // source to put a page behind them yet, so they are held back from the build
-  // rather than filled with text nobody checked. Headlines below are the ones
-  // from the plan. See HANDOFF.md for exactly what each one still needs.
-  // ---------------------------------------------------------------------------
-  {
-    slug: 'cr27i-scoring-targets',
-    num: 3,
-    title: 'CR27I scoring targets from OpenLAP sweep',
-    role: 'Systems Engineering Lead',
-    category: 'Systems Engineering',
-    headline: 'CR26I scores 514 points. CR27I minimum 526.8, target 547.8.',
-    thumb: null,
-    thumbAlt: '',
-    draft: true,
-    repo: null,
-    problem: [],
-    myRole: [],
-    approach: [],
-    result: [],
-    limitations: [],
-    tools: [],
-  },
   {
     slug: 'team-tooling',
     num: 7,
     title: 'Team tooling',
     role: 'Systems Engineering Lead',
     category: 'Systems Engineering',
-    headline: 'Cost-report taxonomy pipeline, OpenLAP_Combined IC and EV merge, team wiki bot.',
+    headline:
+      'A taxonomy pipeline that generates 596 wiki pages, one lap simulation covering both cars, and a documentation agent whose publishing rules were corrected by running them over 13,808 files.',
     thumb: null,
     thumbAlt: '',
-    draft: true,
     repo: null,
-    problem: [],
-    myRole: [],
-    approach: [],
-    result: [],
-    limitations: [],
-    tools: [],
+    problem: [
+      'A Formula SAE team turns over every year and the car does not. The knowledge that matters, why a part is the shape it is and what was already tried, leaves with whoever worked it out. New members then spend their first months rediscovering decisions that were made and never written down, and the same mistakes get made on a three-year cycle.',
+      'The tooling problem underneath it is that the team had the information already, scattered across a shared drive, parts workbooks, and design reports. It was not missing. It was unfindable, and nobody was going to hand-write a thousand pages to fix that.',
+    ],
+    myRole: [
+      'I built these as Systems Engineering Lead, because the integration role is where the cost of undocumented decisions actually lands. The failures described below are mine, found in my own tools.',
+    ],
+    approach: [
+      'The first piece is a pipeline that turns the team parts workbook into the structure of the wiki. It reads the workbook and generates the part, subsystem, and subteam entries the site is built from, so the workbook is the single source and the generated files are disposable. Hand edits to the generated side are overwritten on the next run, which is deliberate: two sources of truth is the failure this was built to avoid. It carries no cost or supplier data, by design.',
+      'The second is keeping one lap simulation rather than one per powertrain. The combustion and electric paths live in the same script, with the combustion side running the engine and fuel maps and the electric side running its torque curve, motor and battery efficiency, and power limit. Two separate models drift apart and then disagree, and nobody can tell which one is wrong.',
+      'The third is the documentation agent. It generates a page for every part, subsystem, and subteam in the taxonomy, and a thing nobody has written up still gets a page: the page carries what the workbook knows and then a block naming each field still missing, using the template prompt for that field. Five hundred pages that each ask a specific question are worth more than five hundred that say nothing.',
+      'Because both wiki sites are public and unauthenticated, what the agent is allowed to read is the thing standing between the shared drive and a public page. That gate has two layers: an absolute list of folders never to open, checked first, and a weighted score over the remaining folder names with three outcomes, read, refuse, or hold for a human. A folder under a refused folder stays refused, and a name matching nothing inherits its nearest scored ancestor.',
+    ],
+    callout: {
+      title: 'Engineering and personal vocabulary overlap far more than a term list assumes',
+      body: [
+        'The publishing rules looked sound written down. Every one of the corrections below came from running them against the real shared drive, and none from reading them.',
+        'A rule meant to catch CVs refused constant-velocity drivetrain parts across four cars, and caught no actual CV. A profanity rule refused twelve genuine engineering folders, two of them finite element studies. A single ordinary word in the token list refused 421 folders, most of them sync-conflict CAD. A name detector read a job title as a person. Nine rules changed and three were dropped outright because the run priced them.',
+        'Underneath that sat a worse one, a process bug rather than a rule. The scorer self test was loading a fallback vocabulary instead of the real subsystem list, so it passed green while several real terms behaved differently in production. It was found only by generating the rule workbook from the code that actually runs, rather than maintaining the document separately. The self test now refuses to run against the fallback at all.',
+        'The lesson generalises past this tool. A keyword blocklist written from imagination encodes what you expect the vocabulary to be, and an engineering shared drive is exactly where that expectation is wrong.',
+      ],
+    },
+    result: [
+      'Verified by a real end-to-end run rather than by reading the code: five sources in, 611 notes and 617 site pages out, with nothing left unresolved. 596 of those pages are the generated taxonomy, covering 553 parts, 36 subsystems, and 7 subteams.',
+      'The publishing gate was measured rather than argued. A names-only dry run over the live shared drive walked 13,808 files without opening one of them or writing anything back, refusing 1,355 and holding 142 across 223 folders for a human decision.',
+      'The deduplication guard is the part I would defend hardest. Folding both case and punctuation caught 10 duplicate entries where folding case alone caught 6. A first attempt that reused the prose glossary to merge entries folded four more pairs and every one was wrong, because three of them were an assembly and its own children. The guard that makes it safe is structural: two names can only be the same thing if no single car carries both, which is a fact in the workbook rather than a judgement call. Nine further pairs are flagged on every run and deliberately left unmerged, because a parenthetical is not reliably an alias.',
+      'The rules document cannot drift from the rules that run, because it is generated by importing the scorer and calling it. That is what exposed the self-test bug above.',
+    ],
+    limitations: [
+      'The publishing rule set is a specification and a report generator, not a gate wired into the pipeline. It tells you what would be refused; it does not yet do the refusing.',
+      'The pattern list is a first draft. Every pattern needs its own run against the real corpus and a false-positive review before it gates a publish, and a pattern that fires on anything in the known-good list needs narrowing rather than an override.',
+      'A folder name that matches nothing inherits the decision of its nearest scored ancestor, so where a folder sits changes whether it is read. That is the intended behaviour and it also means a reorganisation of the shared drive can silently change the read set.',
+      'Some genuine engineering files are still refused because of the folder they happen to sit under, and course-related folders split inconsistently depending on whether a subsystem term happens to fire in the name. Both are open, and both are judgement calls rather than bugs.',
+      'The deduplication guard refuses to guess. It merges only what the structure proves is the same thing and flags the rest, so a human still has to settle the ambiguous cases by editing the workbook.',
+      'The shared lap simulation only shares the quasi-steady path. The electric car cannot run the transient model at all, because its vehicle workbook carries no suspension data.',
+    ],
+    tools: ['Python', 'YAML', 'Excel', 'MATLAB', 'Git'],
   },
+
 ];
 
-/** Published projects, in plan roster order. Drafts never reach the build. */
+/**
+ * Published projects, in plan roster order. The whole roster is written as of
+ * 2026-10-05, so `drafts` is empty; the flag and the filter stay because the
+ * next page to be started should be held back the same way rather than shipped
+ * half written.
+ */
 export const published = projects
   .filter((p) => !p.draft)
   .sort((a, b) => a.num - b.num);
 
-/** Roster entries still waiting on content. Used by the build summary, not rendered. */
+/** Roster entries still waiting on content. Not rendered anywhere. */
 export const drafts = projects.filter((p) => p.draft).sort((a, b) => a.num - b.num);
 
 /** The home page features the first three published projects. */

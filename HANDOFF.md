@@ -21,15 +21,17 @@ actually in the repo, so nothing silently ships half finished.
 | --- | --- | --- |
 | 1 | Cooling duct for CR26 | Published. Full content from the portfolio PDF. |
 | 2 | NTU radiator sizing and oil down-select | Published. Full content, including the correlation callout. |
-| 3 | CR27I scoring targets from OpenLAP sweep | **Draft, held back.** |
+| 3 | Aerodynamic design space against competition points | Published 2026-10-05. Retitled; see below. |
 | 4 | One-at-a-time parameter sensitivity study | Published 2026-10-05. Scoped to the OAT study only; the spring rate grid is not part of it. |
 | 5 | EV endurance power-limit study | Published. Full content from the portfolio PDF. |
 | 6 | Vehicle speed Kalman filter | Published. Full content from the portfolio PDF. |
-| 7 | Team tooling | **Draft, held back.** |
+| 7 | Team tooling | Published 2026-10-05. |
 | 8 | Torque maps, suspension, and the 14 DOF model in the lap simulation | Published. Added 2026-10-05, not on the original roster. |
 
-Numbering follows the plan roster. The three drafts sit in `src/data/projects.ts` with `draft: true`
-and their plan headline, so the roster is visible in the code, but they do not reach the build.
+Numbering follows the plan roster. **The whole roster is written as of 2026-10-05, so there are no
+drafts left.** The `draft: true` flag and the filter behind it stay in `src/data/projects.ts`, because
+the next page someone starts should be held out of the build the same way rather than shipped half
+written.
 
 Project 8 is new. It covers the engine map work, the suspension, and the 14 DOF transient model,
 written from the 14DOF and Reforged QSS reference notes and from `OpenLap_Reforged_FULL.m` itself.
@@ -39,21 +41,45 @@ illustrated, which is deliberate: pairing them with a quasi-steady plot would mi
 
 If a 14 DOF run is ever exported with plots, a log-against-simulation trace belongs on that page.
 
-## What each draft still needs
+## Project 3 is retitled, and the plan's three numbers are not on it
 
-**3, CR27I scoring targets.** The only content that exists anywhere is the three numbers from the plan:
-CR26I scores 514 points, CR27I minimum 526.8, target 547.8. The problem statement, the sweep setup,
-and the limitations are not written down anywhere I could read, and I will not invent them. Needs:
-what the sweep varied, why 526.8 is the floor and 547.8 the target, and the score against Cl and mass
-plot the plan names as the thumbnail.
+The plan's roster entry was "CR27I scoring targets from OpenLAP sweep", headlined **CR26I scores 514
+points, CR27I minimum 526.8, target 547.8**.
 
-**7, Team tooling.** Needs a description of the cost-report taxonomy pipeline that carries no cost
-figures and no part costs, plus the OpenLAP IC and EV merge and the wiki bot. Per your instruction this
-page stays vague on anything financial.
+**Those three numbers could not be sourced and are therefore not on the page.** They appear in the plan
+PDF and nowhere else: not in any sweep workbook, not in `02 - FSAE`, not anywhere on this machine. The
+closest real figure is 510.89, the best total in the fast-autocross workbook, which is near 514 but is
+a different quantity. Publishing a scoring target under your name without a source behind it is the one
+thing a page like this cannot afford, so the page is built from what the workbooks actually contain.
+
+If those three numbers came from somewhere real, point me at it and the page can carry them as targets
+against the design space it already plots. Until then the page is titled for what it demonstrates.
+
+What it is built from: `FSAE Sweep Results\Cl to Cd Point predictions past 5 years .xlsx` and
+`... Fast Autox Slow Endurance.xlsx`. 357 grid points each, read directly. This also matches what
+`02 - FSAE\Design Review.md` asks the design review to cover: "Show why chose specific Cl and Cd for
+the car. Explain Design spaces."
+
+## Project 7 and the cost constraint
+
+Written to your instruction that cost stays vague. The page names no money figure, no supplier, no
+part cost, and no bill-of-materials line counts. It describes the pipeline as carrying no cost data by
+design, which is both true and the honest selling point.
+
+Two things I deliberately left off that page:
+
+- **The specific part names** that collided in the deduplication work. They are good illustrations and
+  they are also a public list of this team's components, which is squarely inside what leadership
+  approval covers.
+- **The reason the publishing gate exists.** The source note records specific personal documents that
+  reached a public page before the gate was built. That is a real incident involving real people, it
+  reflects on the team rather than on the engineering, and putting it on a public portfolio to
+  illustrate a lesson would repeat the original mistake. The page says the sites are public and
+  unauthenticated and leaves it there.
 
 ## Decisions I made, flag any you want changed
 
-- **Home features projects 1, 2, and 4**, because 3 is still a draft. The plan said feature 1, 2, and 3.
+- **Home features projects 1, 2, and 3**, which is what the plan asked for, now that 3 exists.
   Featuring is automatic: the first three published projects, in roster order.
 - **Project 4 is scoped to the OAT study alone**, on Matthew's instruction 2026-10-05. The title drops
   the "14-DOF spring rate grid" half of the plan's roster entry, because that work is not written down
@@ -64,6 +90,13 @@ page stays vague on anything financial.
   129.2263 s). Every value on it was read out of that workbook, not retyped from a note. The caption
   says it was drawn from the output workbook so nobody mistakes it for a model export. Regenerate it
   by hand if the sweep is re-run; there is no build step that keeps it in sync.
+- **The chart on project 3 is also drawn, not exported**, from the two Cl-against-Cd workbooks. Each
+  panel carries its own colour scale, because a shared scale washed the first panel out to the point of
+  being unreadable; the caption says so, so nobody compares the two panels by shade. The circled optima
+  and the quoted numbers are the comparable things.
+- **Project 7 has no figure.** The wiki agent and the taxonomy pipeline produce pages and logs, not
+  plots, and a schematic I drew of a pipeline I did not diagram originally would be decoration rather
+  than evidence. Its card falls back to the title placeholder, same as the Kalman filter page.
 - **matplotlib is not installed on the build machine**, which is why the chart is hand-written SVG
   rather than a generated PNG. That turned out better: it stays sharp at any size and costs 7 kB.
 - **Resume is a nav link straight to the PDF, not a wrapper page**, matching "direct PDF link, not an
