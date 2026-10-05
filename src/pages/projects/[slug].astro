@@ -1,0 +1,127 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import { published, type Project } from '../../data/projects';
+import { url } from '../../lib/url';
+
+export function getStaticPaths() {
+  return published.map((project, index) => ({
+    params: { slug: project.slug },
+    props: {
+      project,
+      prev: index > 0 ? published[index - 1] : null,
+      next: index < published.length - 1 ? published[index + 1] : null,
+    },
+  }));
+}
+
+interface Props {
+  project: Project;
+  prev: Project | null;
+  next: Project | null;
+}
+
+const { project, prev, next } = Astro.props;
+---
+
+<Base title={project.title} description={project.headline} path="/projects">
+  <section class="project-head">
+    <div class="wrap">
+      <span class="role-tag">{project.role}</span>
+      <h1>{project.title}</h1>
+      <p class="headline">{project.headline}</p>
+    </div>
+  </section>
+
+  <article class="prose">
+    <div class="wrap">
+      <h2>Problem</h2>
+      {project.problem.map((p) => <p>{p}</p>)}
+
+      <h2>My role</h2>
+      {project.myRole.map((p) => <p>{p}</p>)}
+
+      <h2>Approach</h2>
+      {project.approach.map((p) => <p>{p}</p>)}
+
+      {
+        project.specs && (
+          <table class="spec-table">
+            <tbody>
+              {project.specs.map((spec) => (
+                <tr>
+                  <th scope="row">{spec.label}</th>
+                  <td>{spec.value}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )
+      }
+
+      {
+        project.code?.map((excerpt) => (
+          <div class="code-block">
+            <p class="code-title" id={`code-${excerpt.title.replace(/\W+/g, '-').toLowerCase()}`}>
+              {excerpt.title}
+            </p>
+            {/* tabindex makes the horizontally scrollable block reachable by keyboard. */}
+            <pre
+              tabindex="0"
+              role="region"
+              aria-labelledby={`code-${excerpt.title.replace(/\W+/g, '-').toLowerCase()}`}
+            ><code class={`language-${excerpt.lang}`}>{excerpt.code}</code></pre>
+          </div>
+        ))
+      }
+
+      {
+        project.figures?.map((figure) => (
+          <figure>
+            <Image src={figure.src} alt={figure.alt} widths={[600, 1200]} sizes="(max-width: 48rem) 100vw, 44rem" loading="lazy" />
+            {figure.caption && <figcaption>{figure.caption}</figcaption>}
+          </figure>
+        ))
+      }
+
+      {
+        project.callout && (
+          <aside class="callout">
+            <h3>{project.callout.title}</h3>
+            {project.callout.body.map((p) => (
+              <p>{p}</p>
+            ))}
+          </aside>
+        )
+      }
+
+      <h2>Result</h2>
+      <ul>
+        {project.result.map((item) => <li>{item}</li>)}
+      </ul>
+
+      <h2>Known limitations</h2>
+      <ul>
+        {project.limitations.map((item) => <li>{item}</li>)}
+      </ul>
+
+      <h2>Tools</h2>
+      <ul class="tool-chips">
+        {project.tools.map((tool) => <li>{tool}</li>)}
+      </ul>
+
+      {
+        project.repo && (
+          <p>
+            <a href={project.repo}>Source repository</a>
+          </p>
+        )
+      }
+
+      <nav class="pager" aria-label="Project">
+        <span>{prev && <a href={url(`/projects/${prev.slug}`)}>&larr; {prev.title}</a>}</span>
+        <span>{next && <a href={url(`/projects/${next.slug}`)}>{next.title} &rarr;</a>}</span>
+      </nav>
+    </div>
+  </article>
+</Base>

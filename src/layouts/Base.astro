@@ -1,0 +1,90 @@
+---
+import '../styles/global.css';
+import { site, nav } from '../data/site';
+import { url } from '../lib/url';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Site-root-relative path of the current page, for nav highlighting. */
+  path?: string;
+}
+
+const { title, description, path = '' } = Astro.props;
+const fullTitle = title === site.name ? `${site.name} | Engineering Portfolio` : `${title} | ${site.name}`;
+const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+const year = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta name="theme-color" content="#16365c" />
+    <link
+      rel="icon"
+      href={`data:image/svg+xml,${encodeURIComponent(
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="10" fill="#16365c"/><text x="32" y="44" font-family="Helvetica,Arial,sans-serif" font-size="32" font-weight="700" fill="#fff" text-anchor="middle">MJ</text></svg>',
+      )}`}
+    />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header">
+      <div class="wrap">
+        <a class="brand" href={url('/')}>{site.name}</a>
+        <nav aria-label="Main">
+          {
+            nav.map((item) => (
+              <a
+                href={url(item.href)}
+                aria-current={
+                  item.href === '/'
+                    ? path === '/'
+                      ? 'page'
+                      : undefined
+                    : path.startsWith(item.href)
+                      ? 'page'
+                      : undefined
+                }
+              >
+                {item.label}
+              </a>
+            ))
+          }
+          {site.resumeUrl && <a href={url('/' + site.resumeUrl)}>Resume</a>}
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap">
+        <p>
+          {site.name} &middot; {site.team}, {site.teamNote} &middot;
+          <a href={`mailto:${site.email}`}>{site.email}</a>
+          {site.linkedin && (
+            <>
+              {' '}&middot; <a href={site.linkedin}>LinkedIn</a>
+            </>
+          )}
+        </p>
+        <p>
+          Built with Astro, served by GitHub Pages. <a href={site.repo}>Source</a>. &copy; {year}
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,66 @@
+---
+import Base from '../../layouts/Base.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import { published, categories } from '../../data/projects';
+---
+
+<Base
+  title="Projects"
+  description="Formula SAE engineering projects: cooling hardware and analysis, lap simulation, and vehicle state estimation."
+  path="/projects"
+>
+  <section class="section" style="padding-top:2.25rem">
+    <div class="wrap">
+      <h1 style="margin:0 0 1.25rem;font-size:clamp(1.6rem,5vw,2.2rem);color:var(--navy-deep);letter-spacing:-0.02em">
+        Projects
+      </h1>
+
+      <fieldset class="filter" id="project-filter">
+        <legend class="skip-link">Filter projects by role</legend>
+        <button type="button" data-filter="all" aria-pressed="true">All</button>
+        {
+          categories.map((category) => (
+            <button type="button" data-filter={category} aria-pressed="false">
+              {category}
+            </button>
+          ))
+        }
+      </fieldset>
+
+      <ul class="cards" id="project-grid">
+        {published.map((project) => <ProjectCard project={project} />)}
+      </ul>
+
+      <p id="filter-empty" hidden style="color:var(--muted)">No projects in that category yet.</p>
+    </div>
+  </section>
+</Base>
+
+<script>
+  // Progressive enhancement: without JS every card is already visible.
+  const filter = document.getElementById('project-filter');
+  const grid = document.getElementById('project-grid');
+  const empty = document.getElementById('filter-empty');
+
+  if (filter && grid && empty) {
+    const buttons = Array.from(filter.querySelectorAll<HTMLButtonElement>('button[data-filter]'));
+    const cards = Array.from(grid.querySelectorAll<HTMLElement>('.card'));
+
+    filter.addEventListener('click', (event) => {
+      const button = (event.target as HTMLElement).closest<HTMLButtonElement>('button[data-filter]');
+      if (!button) return;
+
+      const wanted = button.dataset.filter;
+      buttons.forEach((b) => b.setAttribute('aria-pressed', String(b === button)));
+
+      let shown = 0;
+      cards.forEach((card) => {
+        const match = wanted === 'all' || card.dataset.category === wanted;
+        card.hidden = !match;
+        if (match) shown += 1;
+      });
+
+      empty.hidden = shown > 0;
+    });
+  }
+</script>

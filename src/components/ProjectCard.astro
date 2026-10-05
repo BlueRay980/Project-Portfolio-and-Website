@@ -1,0 +1,37 @@
+---
+import { Image } from 'astro:assets';
+import type { Project } from '../data/projects';
+import { url } from '../lib/url';
+
+interface Props {
+  project: Project;
+}
+
+const { project } = Astro.props;
+---
+
+<li class="card" data-category={project.category}>
+  <a class="card-link" href={url(`/projects/${project.slug}`)}>
+    {
+      project.thumb ? (
+        <Image
+          class="thumb"
+          src={project.thumb}
+          alt={project.thumbAlt}
+          widths={[400, 800]}
+          sizes="(max-width: 40rem) 100vw, 22rem"
+          loading="lazy"
+        />
+      ) : (
+        <div class="thumb-placeholder" aria-hidden="true">
+          {project.title}
+        </div>
+      )
+    }
+    <div class="card-body">
+      <span class="role-tag">{project.role}</span>
+      <h3>{project.title}</h3>
+      <p>{project.headline}</p>
+    </div>
+  </a>
+</li>

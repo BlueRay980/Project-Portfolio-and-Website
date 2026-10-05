@@ -1,0 +1,93 @@
+---
+import Base from '../layouts/Base.astro';
+import { site } from '../data/site';
+import { url } from '../lib/url';
+
+// Reused from the engineering portfolio PDF. The FAA Part 107 certificate was
+// the "Other" row there; it is listed under Certifications here instead, so it
+// does not appear twice on one page.
+const tools = [
+  { group: 'Analysis', items: 'MATLAB (heat transfer, lap simulation, state estimation), Python, Fortran' },
+  { group: 'Design and build', items: 'SolidWorks, GD&T, carbon fiber layup, manual and CNC lathe' },
+  { group: 'Data', items: 'MoTeC i2 logging and analysis, GT-SUITE engine modeling, Excel' },
+];
+
+const certifications = [
+  'FAA Part 107 Remote Pilot Certificate',
+  'Microsoft Office Specialist: Excel Associate',
+];
+---
+
+<Base
+  title="About"
+  description="Dual Mechanical and Aerospace Engineering student at the University of Alabama. Cooling Senior Engineer and Systems Engineering Lead on Crimson Racing."
+  path="/about"
+>
+  <section class="section" style="padding-top:2.25rem">
+    <div class="wrap">
+      <h1 style="margin:0 0 1rem;font-size:clamp(1.6rem,5vw,2.2rem);color:var(--navy-deep);letter-spacing:-0.02em">
+        About
+      </h1>
+
+      <div class="prose" style="padding:0">
+        <p>
+          I am a dual B.S. Mechanical and Aerospace Engineering student at the University of Alabama, graduating in
+          May 2028. I hold two roles on {site.team}, the university Formula SAE team: {site.roles[0]} and {site.roles[1]}.
+        </p>
+        <p>
+          The cooling role is where I design and build hardware. The systems role is where I spend most of my time,
+          because almost every interesting problem on the car turns out to be an integration problem: a change one
+          subteam makes lands on somebody else. The radiator duct is the clearest example I have. It is a thermal
+          part, and almost every constraint on it came from chassis, electrical, or vehicle dynamics.
+        </p>
+        <p>
+          What I care about in analysis work is whether the model can be caught when it is wrong. The radiator sizing
+          project on this site is here partly because the first version of it produced an impossible answer, and the
+          check that caught it is the useful part of the story. Every project page on this site states its own
+          assumptions and what I would do differently.
+        </p>
+
+        <h2>Tools</h2>
+        <table class="tools-table">
+          <tbody>
+            {
+              tools.map((row) => (
+                <tr>
+                  <th scope="row">{row.group}</th>
+                  <td>{row.items}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+
+        <h2>Certifications</h2>
+        <ul>
+          {certifications.map((item) => <li>{item}</li>)}
+        </ul>
+
+        <h2>Contact</h2>
+        <p>
+          <a href={`mailto:${site.email}`}>{site.email}</a>
+          {site.linkedin && (
+            <>
+              {' '}&middot; <a href={site.linkedin}>LinkedIn</a>
+            </>
+          )}
+          {' '}&middot; <a href={site.github}>GitHub</a>
+        </p>
+        {
+          site.resumeUrl ? (
+            <p>
+              <a class="btn btn-primary" href={url('/' + site.resumeUrl)}>
+                Resume (PDF)
+              </a>
+            </p>
+          ) : (
+            <p class="note-inline">Resume available on request.</p>
+          )
+        }
+      </div>
+    </div>
+  </section>
+</Base>

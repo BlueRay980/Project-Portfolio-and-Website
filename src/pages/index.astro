@@ -1,0 +1,54 @@
+---
+import Base from '../layouts/Base.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import { site } from '../data/site';
+import { featured } from '../data/projects';
+import { url } from '../lib/url';
+---
+
+<Base
+  title={site.name}
+  description="Engineering portfolio. Cooling Senior Engineer and Systems Engineering Lead on Crimson Racing, the University of Alabama Formula SAE team."
+  path="/"
+>
+  <section class="hero">
+    <div class="wrap">
+      <h1>{site.name}</h1>
+      <p class="degree">{site.degree}</p>
+      <p class="roles">
+        <strong>{site.roles[0]}</strong> and <strong>{site.roles[1]}</strong>, {site.team}, {site.teamNote}
+      </p>
+      <div class="actions">
+        {
+          site.resumeUrl ? (
+            <a class="btn btn-primary" href={url('/' + site.resumeUrl)}>
+              Resume (PDF)
+            </a>
+          ) : (
+            <span class="note-inline">Resume available on request.</span>
+          )
+        }
+        <a class="btn btn-quiet" href={`mailto:${site.email}`}>{site.email}</a>
+        {
+          site.linkedin && (
+            <a class="btn btn-quiet" href={site.linkedin}>
+              LinkedIn
+            </a>
+          )
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <h2>Featured work</h2>
+      <ul class="cards">
+        {featured.map((project) => <ProjectCard project={project} />)}
+      </ul>
+      <p style="margin-top:1.25rem">
+        <a href={url('/projects')}>All projects</a>
+      </p>
+    </div>
+  </section>
+</Base>
