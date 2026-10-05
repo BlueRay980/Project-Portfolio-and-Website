@@ -380,7 +380,7 @@ export const projects: Project[] = [
       'Eight vehicle parameters swept from -50% to +50% across seven mass cases. Horsepower moves the lap by exactly zero, and that is the correct answer.',
     thumb: '/figures/oat-sensitivity.svg',
     thumbAlt:
-      'Tornado chart of lap time sensitivity for six vehicle parameters, with mass by far the largest and horsepower at exactly zero.',
+      'Tornado chart of lap time sensitivity for six vehicle parameters, with mass by far the largest, more downforce making the car faster, and horsepower at exactly zero.',
     repo: null,
     problem: [
       'Every subteam wants to know what their change is worth in lap time. Aero wants to know what a count of downforce buys, the chassis group wants to know what a kilogram costs, and powertrain wants to know whether chasing horsepower is worth the weight that comes with it. Answering those one at a time, by argument, produces a different answer every time somebody asks.',
@@ -404,9 +404,9 @@ export const projects: Project[] = [
     figures: [
       {
         src: '/figures/oat-sensitivity.svg',
-        alt: 'Tornado chart of change in lap time for six parameters on the 293.41 kg car over Michigan Endurance IC 2026, baseline 129.23 seconds. Mass is by far the largest at minus 13.158 seconds when halved and plus 6.798 when raised 50 percent. Lift coefficient is next at plus 4.837 and minus 4.641. Final gear reduction is plus 2.244 when increased and near zero when reduced. Drag coefficient and centre of pressure are each under one second. Horsepower is exactly zero in both directions.',
+        alt: 'Tornado chart of change in lap time for six parameters on the 293.41 kg car over Michigan Endurance IC 2026, baseline 129.23 seconds. Each bar is labelled with the parameter value that run used. Mass is by far the largest: halved to 146.7 kg it is 13.158 seconds faster, raised to 440.1 kg it is 6.798 seconds slower. Lift coefficient is next: at Cl -1.84, which is less downforce, the car is 4.837 seconds slower, and at Cl -5.52, which is more downforce, it is 4.641 seconds faster. Final gear reduction costs 2.244 seconds when shortened and nothing when lengthened. Drag coefficient and centre of pressure are each under one second. Horsepower is exactly zero in both directions.',
         caption:
-          'Lap time sensitivity for the 293.41 kg car over Michigan Endurance IC 2026. Drawn from the sweep output workbook; the sweep itself writes Excel, not plots. Lift area and frontal area are left off because they land on the lift and drag coefficient numbers to every digit, which is the point made below.',
+          'Lap time sensitivity for the 293.41 kg car over Michigan Endurance IC 2026. Cl and Cd are stored negative in the vehicle workbook, so +50% on Cl means Cl -5.52, which is more downforce, and the lap drops 4.64 s. Every bar carries the value that run actually used, because a percentage alone is ambiguous on a quantity stored negative. Drawn from the sweep output workbook; the sweep itself writes Excel, not plots. Lift area and frontal area are left off because they land on the lift and drag coefficient numbers to every digit, which is the point made below.',
       },
     ],
     callout: {
@@ -422,6 +422,7 @@ export const projects: Project[] = [
     result: [
       'On Michigan Endurance IC 2026 the 293.41 kg car runs a 129.23 s baseline. Halving mass is worth 13.16 s and adding 50% costs 6.80 s, which is roughly three times the next parameter and settles that mass is where the effort goes.',
       'The ranking is identical on all seven mass cases: mass, then lift coefficient and lift area, then final gear reduction, then drag coefficient and frontal area, then centre of pressure, then horsepower. A ranking that survives a 27 kg change in the car is a property of the car rather than of one configuration.',
+      'More downforce is worth 4.64 s on this course. Taking Cl from its baseline -3.68 to -5.52 drops the lap from 129.23 s to 124.59 s, and the sweep is monotonic the whole way: -2.76 gives 131.62 s, -4.60 gives 126.88 s. Worth stating plainly because the sign convention is the trap on this car. Cl is stored negative, so the sweep step called +50% is more downforce, not less, and a reader who takes it the other way concludes the model has downforce backwards.',
       'Every column is monotonic across the whole mass range with no kinks. That is itself a check on the fix, because a surviving sign error would show up as a discontinuity somewhere in the sweep.',
       'Downforce pays most on the light car, and so does mass. Halving lift coefficient costs 5.120 s at 279.82 kg but only 4.578 s at 307 kg, while mass sensitivity falls over the same range from -13.457 s to -12.899 s. Both trends point the same way: the light end of the range is where aerodynamic work is worth most.',
       'Horsepower reads exactly 0.000 in both directions, on every vehicle, and that is a correct result rather than a bug. The car is traction limited at every speed on this course, so in a point-mass model a power change cannot move the lap. Gearing behaves the same way and for the same reason: taller gearing changes nothing, while shorter gearing costs 2.24 s by capping speed on the long straights.',
