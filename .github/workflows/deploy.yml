@@ -10,11 +10,15 @@ permissions:
   pages: write
   id-token: write
 
-# One deploy at a time. Queued runs wait rather than cancel, so a push never
-# leaves the published site half updated.
+# One deploy at a time. A new run supersedes anything already queued or running
+# in this group, so a stuck run can never block the next one. The trade is that
+# a rapid second push cancels the first deploy rather than queueing behind it,
+# which for a static site is the right way round: the newer commit is the one
+# worth publishing, and a half-finished deploy is never left live because the
+# deploy step is atomic.
 concurrency:
   group: pages
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   build:
