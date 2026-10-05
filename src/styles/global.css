@@ -220,6 +220,12 @@ a:hover {
   border-bottom: 1px solid var(--rule);
 }
 
+/* Vector figures are charts with their own titles, so crop nothing. */
+.card img.thumb[src$='.svg'] {
+  object-fit: contain;
+  background: #fff;
+}
+
 .card .thumb-placeholder {
   aspect-ratio: 16 / 9;
   display: grid;

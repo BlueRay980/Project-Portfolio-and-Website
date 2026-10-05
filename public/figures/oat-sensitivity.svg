@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 580" width="1000" height="580" role="img" font-family="Helvetica, Arial, sans-serif">
+<rect width="1000" height="580" fill="#ffffff"/>
+<text x="500" y="40" text-anchor="middle" font-size="26" font-weight="700" fill="#1a1d21">One-at-a-time sensitivity, CR26I at 293.41 kg</text>
+<text x="500" y="68" text-anchor="middle" font-size="16" fill="#5b6470">Michigan Endurance IC 2026, baseline lap 129.23 s. Each parameter swept alone, -50% to +50% in 1% steps.</text>
+<line x1="250.0" y1="100" x2="250.0" y2="468" stroke="#c8ced6" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="250.0" y="494" text-anchor="middle" font-size="15" fill="#5b6470">-14</text>
+<line x1="312.7" y1="100" x2="312.7" y2="468" stroke="#c8ced6" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="312.7" y="494" text-anchor="middle" font-size="15" fill="#5b6470">-12</text>
+<line x1="375.5" y1="100" x2="375.5" y2="468" stroke="#c8ced6" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="375.5" y="494" text-anchor="middle" font-size="15" fill="#5b6470">-10</text>
+<line x1="438.2" y1="100" x2="438.2" y2="468" stroke="#c8ced6" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="438.2" y="494" text-anchor="middle" font-size="15" fill="#5b6470">-8</text>
+<line x1="500.9" y1="100" x2="500.9" y2="468" stroke="#c8ced6" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="500.9" y="494" text-anchor="middle" font-size="15" fill="#5b6470">-6</text>
+<line x1="563.6" y1="100" x2="563.6" y2="468" stroke="#c8ced6" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="563.6" y="494" text-anchor="middle" font-size="15" fill="#5b6470">-4</text>
+<line x1="626.4" y1="100" x2="626.4" y2="468" stroke="#c8ced6" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="626.4" y="494" text-anchor="middle" font-size="15" fill="#5b6470">-2</text>
+<line x1="689.1" y1="100" x2="689.1" y2="468" stroke="#c8ced6" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="689.1" y="494" text-anchor="middle" font-size="15" fill="#5b6470">+0</text>
+<line x1="751.8" y1="100" x2="751.8" y2="468" stroke="#c8ced6" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="751.8" y="494" text-anchor="middle" font-size="15" fill="#5b6470">+2</text>
+<line x1="814.5" y1="100" x2="814.5" y2="468" stroke="#c8ced6" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="814.5" y="494" text-anchor="middle" font-size="15" fill="#5b6470">+4</text>
+<line x1="877.3" y1="100" x2="877.3" y2="468" stroke="#c8ced6" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="877.3" y="494" text-anchor="middle" font-size="15" fill="#5b6470">+6</text>
+<line x1="940.0" y1="100" x2="940.0" y2="468" stroke="#c8ced6" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="940.0" y="494" text-anchor="middle" font-size="15" fill="#5b6470">+8</text>
+<line x1="689.1" y1="100" x2="689.1" y2="468" stroke="#1a1d21" stroke-width="2"/>
+<text x="595" y="524" text-anchor="middle" font-size="16" fill="#1a1d21">Change in lap time (s).  Negative is faster.</text>
+<text x="230" y="135.7" text-anchor="end" font-size="15" fill="#1a1d21">Mass</text>
+<rect x="276.4" y="104.7" width="412.7" height="23" fill="#16365c" rx="2"/>
+<text x="285.4" y="121.2" text-anchor="start" font-size="14" font-weight="700" fill="#ffffff">-13.157</text>
+<rect x="689.1" y="133.7" width="213.2" height="23" fill="#9e1b32" rx="2"/>
+<text x="893.3" y="150.2" text-anchor="end" font-size="14" font-weight="700" fill="#ffffff">+6.798</text>
+<line x1="20" y1="161.3" x2="940" y2="161.3" stroke="#c8ced6" stroke-width="0.8"/>
+<text x="230" y="188.0" text-anchor="end" font-size="15" fill="#1a1d21">Lift coefficient Cl</text>
+<text x="230" y="206.0" text-anchor="end" font-size="15" fill="#1a1d21">(and lift area)</text>
+<rect x="689.1" y="166.0" width="151.7" height="23" fill="#16365c" rx="2"/>
+<text x="831.8" y="182.6" text-anchor="end" font-size="14" font-weight="700" fill="#ffffff">+4.837</text>
+<rect x="543.5" y="195.0" width="145.6" height="23" fill="#9e1b32" rx="2"/>
+<text x="552.5" y="211.6" text-anchor="start" font-size="14" font-weight="700" fill="#ffffff">-4.641</text>
+<line x1="20" y1="222.7" x2="940" y2="222.7" stroke="#c8ced6" stroke-width="0.8"/>
+<text x="230" y="258.3" text-anchor="end" font-size="15" fill="#1a1d21">Final gear reduction</text>
+<text x="679.6" y="243.9" text-anchor="end" font-size="14" font-weight="600" fill="#16365c">-0.016</text>
+<rect x="689.1" y="256.3" width="70.4" height="23" fill="#9e1b32" rx="2"/>
+<text x="750.5" y="272.9" text-anchor="end" font-size="14" font-weight="700" fill="#ffffff">+2.244</text>
+<line x1="20" y1="284.0" x2="940" y2="284.0" stroke="#c8ced6" stroke-width="0.8"/>
+<text x="230" y="310.7" text-anchor="end" font-size="15" fill="#1a1d21">Drag coefficient Cd</text>
+<text x="230" y="328.7" text-anchor="end" font-size="15" fill="#1a1d21">(and frontal area)</text>
+<rect x="666.2" y="288.7" width="22.8" height="23" fill="#16365c" rx="2"/>
+<text x="657.2" y="305.2" text-anchor="end" font-size="14" font-weight="600" fill="#16365c">-0.728</text>
+<rect x="689.1" y="317.7" width="26.7" height="23" fill="#9e1b32" rx="2"/>
+<text x="724.8" y="334.2" text-anchor="start" font-size="14" font-weight="600" fill="#9e1b32">+0.851</text>
+<line x1="20" y1="345.3" x2="940" y2="345.3" stroke="#c8ced6" stroke-width="0.8"/>
+<text x="230" y="381.0" text-anchor="end" font-size="15" fill="#1a1d21">Centre of pressure</text>
+<rect x="671.1" y="350.0" width="18.0" height="23" fill="#16365c" rx="2"/>
+<text x="662.1" y="366.6" text-anchor="end" font-size="14" font-weight="600" fill="#16365c">-0.575</text>
+<rect x="689.1" y="379.0" width="23.0" height="23" fill="#9e1b32" rx="2"/>
+<text x="721.1" y="395.6" text-anchor="start" font-size="14" font-weight="600" fill="#9e1b32">+0.735</text>
+<line x1="20" y1="406.7" x2="940" y2="406.7" stroke="#c8ced6" stroke-width="0.8"/>
+<text x="230" y="442.3" text-anchor="end" font-size="15" fill="#1a1d21">Horsepower</text>
+<text x="698.1" y="427.9" text-anchor="start" font-size="14" font-weight="600" fill="#16365c">+0.000</text>
+<text x="698.1" y="456.9" text-anchor="start" font-size="14" font-weight="600" fill="#9e1b32">+0.000</text>
+<text x="745" y="442" font-size="14.5" font-style="italic" fill="#5b6470">exactly zero both ways:</text>
+<text x="745" y="460" font-size="14.5" font-style="italic" fill="#5b6470">traction limited at every speed</text>
+<rect x="250" y="537" width="17" height="17" fill="#16365c" rx="2"/>
+<text x="276" y="550" font-size="15" fill="#1a1d21">parameter reduced 50%</text>
+<rect x="490" y="537" width="17" height="17" fill="#9e1b32" rx="2"/>
+<text x="516" y="550" font-size="15" fill="#1a1d21">parameter increased 50%</text>
+</svg>

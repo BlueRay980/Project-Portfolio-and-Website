@@ -13,7 +13,9 @@ const { project } = Astro.props;
 <li class="card" data-category={project.category}>
   <a class="card-link" href={url(`/projects/${project.slug}`)}>
     {
-      project.thumb ? (
+      typeof project.thumb === 'string' ? (
+        <img class="thumb" src={url(project.thumb)} alt={project.thumbAlt} loading="lazy" />
+      ) : project.thumb ? (
         <Image
           class="thumb"
           src={project.thumb}

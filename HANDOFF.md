@@ -22,7 +22,7 @@ actually in the repo, so nothing silently ships half finished.
 | 1 | Cooling duct for CR26 | Published. Full content from the portfolio PDF. |
 | 2 | NTU radiator sizing and oil down-select | Published. Full content, including the correlation callout. |
 | 3 | CR27I scoring targets from OpenLAP sweep | **Draft, held back.** |
-| 4 | 14-DOF spring rate grid and OAT sensitivity | **Draft, held back.** |
+| 4 | One-at-a-time parameter sensitivity study | Published 2026-10-05. Scoped to the OAT study only; the spring rate grid is not part of it. |
 | 5 | EV endurance power-limit study | Published. Full content from the portfolio PDF. |
 | 6 | Vehicle speed Kalman filter | Published. Full content from the portfolio PDF. |
 | 7 | Team tooling | **Draft, held back.** |
@@ -47,22 +47,25 @@ and the limitations are not written down anywhere I could read, and I will not i
 what the sweep varied, why 526.8 is the floor and 547.8 the target, and the score against Cl and mass
 plot the plan names as the thumbnail.
 
-**4, 14-DOF spring rate grid and OAT sensitivity.** The OAT half is well documented: the eight-parameter
-sweep from -50% to +50%, seven vehicle masses, four events, and the parameter ranking that comes out
-identical on all seven (mass, then Cl and lift area tied, then Cd and frontal area tied, then centre of
-pressure, then final gear, then horsepower at zero because the car is traction limited at every speed).
-That is a strong page on its own, and the horsepower-reads-zero result is the kind of finding that
-matches the voice of the duct and radiator pages. The spring rate grid half is not written down. Needs:
-a decision on whether to publish the OAT study alone, and if not, the spring rate grid numbers.
-
 **7, Team tooling.** Needs a description of the cost-report taxonomy pipeline that carries no cost
 figures and no part costs, plus the OpenLAP IC and EV merge and the wiki bot. Per your instruction this
 page stays vague on anything financial.
 
 ## Decisions I made, flag any you want changed
 
-- **Home features projects 1, 2, and 5**, because 3 is a draft. The plan said feature 1, 2, and 3.
+- **Home features projects 1, 2, and 4**, because 3 is still a draft. The plan said feature 1, 2, and 3.
   Featuring is automatic: the first three published projects, in roster order.
+- **Project 4 is scoped to the OAT study alone**, on Matthew's instruction 2026-10-05. The title drops
+  the "14-DOF spring rate grid" half of the plan's roster entry, because that work is not written down
+  anywhere. If the spring rate grid is ever written up it wants its own page rather than an edit here.
+- **The chart on project 4 is drawn, not exported.** The sweep writes Excel workbooks and no plots at
+  all, so the tornado chart is an inline SVG in `public/figures/oat-sensitivity.svg` built from the
+  -50% and +50% rows of `Sensitivity_CR26I_293_41_.xlsx` (Michigan Endurance IC 2026, baseline
+  129.2263 s). Every value on it was read out of that workbook, not retyped from a note. The caption
+  says it was drawn from the output workbook so nobody mistakes it for a model export. Regenerate it
+  by hand if the sweep is re-run; there is no build step that keeps it in sync.
+- **matplotlib is not installed on the build machine**, which is why the chart is hand-written SVG
+  rather than a generated PNG. That turned out better: it stays sharp at any size and costs 7 kB.
 - **Resume is a nav link straight to the PDF, not a wrapper page**, matching "direct PDF link, not an
   embedded viewer". Right now `resumeUrl` is null so the link is hidden entirely and the home page
   reads "Resume available on request" instead of shipping a dead link.

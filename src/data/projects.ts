@@ -11,8 +11,15 @@ import wheelLoads from '../assets/wheel-loads.png';
 export type Role = 'Cooling Senior Engineer' | 'Systems Engineering Lead';
 export type Category = 'Cooling' | 'Systems Engineering';
 
+/**
+ * An imported raster asset, which Astro resizes and converts to WebP, or a
+ * site-root-relative path under public/ for vector figures that should be
+ * served as-is. Pass the latter through `url()` at render time.
+ */
+export type ImageSource = ImageMetadata | string;
+
 export interface Figure {
-  src: ImageMetadata;
+  src: ImageSource;
   alt: string;
   caption?: string;
 }
@@ -36,7 +43,7 @@ export interface Project {
   category: Category;
   /** One line with a number in it. Used on the card and under the page title. */
   headline: string;
-  thumb: ImageMetadata | null;
+  thumb: ImageSource | null;
   thumbAlt: string;
   /** Draft pages are excluded from the build. See HANDOFF.md. */
   draft?: boolean;
@@ -299,6 +306,74 @@ export const projects: Project[] = [
   },
 
   {
+    slug: 'oat-sensitivity-study',
+    num: 4,
+    title: 'One-at-a-time parameter sensitivity study',
+    role: 'Systems Engineering Lead',
+    category: 'Systems Engineering',
+    headline:
+      'Eight vehicle parameters swept from -50% to +50% across seven mass cases. Horsepower moves the lap by exactly zero, and that is the correct answer.',
+    thumb: '/figures/oat-sensitivity.svg',
+    thumbAlt:
+      'Tornado chart of lap time sensitivity for six vehicle parameters, with mass by far the largest and horsepower at exactly zero.',
+    repo: null,
+    problem: [
+      'Every subteam wants to know what their change is worth in lap time. Aero wants to know what a count of downforce buys, the chassis group wants to know what a kilogram costs, and powertrain wants to know whether chasing horsepower is worth the weight that comes with it. Answering those one at a time, by argument, produces a different answer every time somebody asks.',
+      'What was needed was one sweep that puts all of them on the same axis, run on the same car over the same course, so the arguments become a ranking instead of opinions.',
+    ],
+    myRole: [
+      'As Systems Engineering Lead I own this tool and the numbers that come out of it. I wrote the multi-vehicle sweep, found and fixed the three defects below, and ran the campaign. The defects are mine, and two of them had already produced results that the team had been reading.',
+    ],
+    approach: [
+      'The sweep builds a grip envelope for the car, runs a quasi-steady lap, and then varies one parameter at a time from -50% to +50% in 1% steps while holding everything else fixed. One at a time is the right method here because the question is a ranking, and a full factorial over eight parameters would cost far more runs to answer a question nobody asked.',
+      'It runs the whole sweep for every vehicle workbook in a folder, so the same eight parameters are swept across a range of car masses, and writes one workbook per vehicle plus a cross-vehicle comparison. Running seven masses rather than one is what turns a single ranking into a trend: it shows whether the ranking is a property of the car or of the particular mass it happened to be at.',
+      'The eight parameters are mass, lift coefficient and lift area, drag coefficient and frontal area, centre of pressure, final gear reduction, and horsepower. Lift coefficient and lift area are swept separately on purpose even though they enter the physics as one product, because their agreement is a check on the sweep itself.',
+    ],
+    specs: [
+      { label: 'Model', value: 'Quasi-steady point mass with a grip envelope and a live engine map' },
+      { label: 'Parameters', value: '8, swept one at a time from -50% to +50% in 1% steps' },
+      { label: 'Vehicles', value: '7 mass cases, 279.82 kg to 307 kg' },
+      { label: 'Course shown', value: 'Michigan Endurance IC 2026' },
+      { label: 'Campaign', value: '4 events, 7 vehicles, 22,624 solver runs, zero failures' },
+    ],
+    figures: [
+      {
+        src: '/figures/oat-sensitivity.svg',
+        alt: 'Tornado chart of change in lap time for six parameters on the 293.41 kg car over Michigan Endurance IC 2026, baseline 129.23 seconds. Mass is by far the largest at minus 13.158 seconds when halved and plus 6.798 when raised 50 percent. Lift coefficient is next at plus 4.837 and minus 4.641. Final gear reduction is plus 2.244 when increased and near zero when reduced. Drag coefficient and centre of pressure are each under one second. Horsepower is exactly zero in both directions.',
+        caption:
+          'Lap time sensitivity for the 293.41 kg car over Michigan Endurance IC 2026. Drawn from the sweep output workbook; the sweep itself writes Excel, not plots. Lift area and frontal area are left off because they land on the lift and drag coefficient numbers to every digit, which is the point made below.',
+      },
+    ],
+    callout: {
+      title: 'The workbook said more downforce makes the car slower, and the solver was right all along',
+      body: [
+        'The first version of this sweep produced a result the whole team would have acted on: adding downforce made the car slower. It was wrong, and nothing in the output looked wrong.',
+        'The sweep scale for the two coefficients was being inverted in one place and not in the other, so the column reporting what value had been used disagreed with the value actually fed to the solver. The row labelled +50% lift coefficient was reporting a number from a run that had used the opposite end of the sweep. The solver was never wrong; the label was.',
+        'What made it survive review is that lift coefficient and lift area scale the identical product, so the two sheets came out as exact mirror images of each other to four decimals. A clean, symmetric, entirely plausible pair of curves pointing the wrong way.',
+        'Two more defects sat underneath it. Vertical load was adding weight and downforce instead of subtracting, and rolling resistance was being subtracted where it should have been added, which together produced a constant phantom forward acceleration of 0.628 m/s-squared at every speed. Separately, the acceleration path never applied the tyre longitudinal limit at all: the car was being allowed 2 to 4.8 g where the tyre delivers 0.6 to 0.9 g.',
+        'The check that now proves the fix is the one that exposed it. Lift coefficient and lift area agree row for row instead of mirroring, and so do drag coefficient and frontal area. That agreement is visible in the chart above, which is why those two are not plotted twice.',
+      ],
+    },
+    result: [
+      'On Michigan Endurance IC 2026 the 293.41 kg car runs a 129.23 s baseline. Halving mass is worth 13.16 s and adding 50% costs 6.80 s, which is roughly three times the next parameter and settles that mass is where the effort goes.',
+      'The ranking is identical on all seven mass cases: mass, then lift coefficient and lift area, then final gear reduction, then drag coefficient and frontal area, then centre of pressure, then horsepower. A ranking that survives a 27 kg change in the car is a property of the car rather than of one configuration.',
+      'Every column is monotonic across the whole mass range with no kinks. That is itself a check on the fix, because a surviving sign error would show up as a discontinuity somewhere in the sweep.',
+      'Downforce pays most on the light car, and so does mass. Halving lift coefficient costs 5.120 s at 279.82 kg but only 4.578 s at 307 kg, while mass sensitivity falls over the same range from -13.457 s to -12.899 s. Both trends point the same way: the light end of the range is where aerodynamic work is worth most.',
+      'Horsepower reads exactly 0.000 in both directions, on every vehicle, and that is a correct result rather than a bug. The car is traction limited at every speed on this course, so in a point-mass model a power change cannot move the lap. Gearing behaves the same way and for the same reason: taller gearing changes nothing, while shorter gearing costs 2.24 s by capping speed on the long straights.',
+      'Extending the campaign to four events needed two of them rebuilt before they would run at all. The solver works from corner apexes, and a skidpad is a constant-radius circle with no local curvature maximum, so its apex list came back genuinely empty. Acceleration has no course at all. Skidpad was fixed with data rather than code, by writing one apex per arc, and acceleration got a dedicated straight-line solver.',
+    ],
+    limitations: [
+      'This is a quasi-steady point mass. It has no transient weight transfer, no suspension, and no driver variation, so it ranks parameters rather than predicting lap times.',
+      'The grip envelope has no longitudinal load transfer. On a 75 m acceleration run the missing rearward transfer is 468 N against a 1495 N static rear load, 31% of it, which is why acceleration has to be calibrated to a grip factor of 1.074 where the other events sit between 0.64 and 0.86. Adding that term is the one model change this campaign argues for.',
+      'Calibration constants do not transport. Taking the tuned grip pair from this solver into another quasi-steady model of the same car on the same course reads 1.29 s slow, so these are per-solver, per-event lap-time constants and nothing more.',
+      'One of the four events is calibrated against average race pace rather than a clean lap, because its target comes from a full race distance that carries traffic, penalties, and out and in laps. Its grip constant is not comparable with the other three and should not be read as a tyre property.',
+      'Skidpad only resolves to about plus or minus 0.003 s. The smoothing window spans both curvature sign changes on a short closed course, so time against grip jitters non-monotonically at that level. That is roughness rather than convergence, and the search cannot do better.',
+      'Because the sweep varies one parameter at a time, it cannot see interactions. Mass and downforce clearly interact here, which is visible only because seven mass cases were run; any two parameters that trade against each other would be invisible within a single sweep.',
+    ],
+    tools: ['MATLAB', 'Quasi-steady lap simulation', 'Python (openpyxl)', 'Excel'],
+  },
+
+  {
     slug: 'lapsim-torque-maps-suspension-14dof',
     num: 8,
     title: 'Torque maps, suspension, and the 14 DOF model in the lap simulation',
@@ -415,24 +490,6 @@ export const projects: Project[] = [
     role: 'Systems Engineering Lead',
     category: 'Systems Engineering',
     headline: 'CR26I scores 514 points. CR27I minimum 526.8, target 547.8.',
-    thumb: null,
-    thumbAlt: '',
-    draft: true,
-    repo: null,
-    problem: [],
-    myRole: [],
-    approach: [],
-    result: [],
-    limitations: [],
-    tools: [],
-  },
-  {
-    slug: 'spring-rate-grid-oat',
-    num: 4,
-    title: '14-DOF spring rate grid and OAT sensitivity study',
-    role: 'Systems Engineering Lead',
-    category: 'Systems Engineering',
-    headline: 'Response surfaces and parameter ranking for CR26I.',
     thumb: null,
     thumbAlt: '',
     draft: true,

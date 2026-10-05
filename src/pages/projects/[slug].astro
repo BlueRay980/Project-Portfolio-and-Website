@@ -78,7 +78,11 @@ const { project, prev, next } = Astro.props;
       {
         project.figures?.map((figure) => (
           <figure>
-            <Image src={figure.src} alt={figure.alt} widths={[600, 1200]} sizes="(max-width: 48rem) 100vw, 44rem" loading="lazy" />
+            {typeof figure.src === 'string' ? (
+              <img src={url(figure.src)} alt={figure.alt} loading="lazy" />
+            ) : (
+              <Image src={figure.src} alt={figure.alt} widths={[600, 1200]} sizes="(max-width: 48rem) 100vw, 44rem" loading="lazy" />
+            )}
             {figure.caption && <figcaption>{figure.caption}</figcaption>}
           </figure>
         ))

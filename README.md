@@ -34,6 +34,7 @@ shared template is the only way that stays true as pages get added.
 | `src/pages/projects/index.astro` | Card grid with the Cooling / Systems Engineering filter. |
 | `src/pages/about.astro` | First-person paragraph, tools table, certifications. |
 | `src/assets/` | Photos and plots. Astro converts them to sized WebP at build time. |
+| `public/figures/` | Vector figures, served as-is. Referenced by a site-root-relative string rather than an import. |
 
 ### Adding a project
 
