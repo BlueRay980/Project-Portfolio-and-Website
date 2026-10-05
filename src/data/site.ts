@@ -13,10 +13,10 @@ export const site = {
   // rather than rendered broken.
   linkedin: null as string | null,
 
-  // Set this to 'resume.pdf' once a public resume variant (no street address,
-  // no phone number) is placed in public/. While it is null the Resume nav item
-  // and the home-page button fall back to a plain "available on request" line.
-  resumeUrl: null as string | null,
+  // The published resume, served from public/. Setting this to null pulls the
+  // Resume nav item and the home-page button and falls back to a plain
+  // "available on request" line, with no dead link left behind.
+  resumeUrl: 'resume.pdf' as string | null,
 
   github: 'https://github.com/BlueRay980',
   repo: 'https://github.com/BlueRay980/Project-Portfolio-and-Website',

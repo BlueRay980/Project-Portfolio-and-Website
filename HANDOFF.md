@@ -26,9 +26,18 @@ actually in the repo, so nothing silently ships half finished.
 | 5 | EV endurance power-limit study | Published. Full content from the portfolio PDF. |
 | 6 | Vehicle speed Kalman filter | Published. Full content from the portfolio PDF. |
 | 7 | Team tooling | **Draft, held back.** |
+| 8 | Torque maps, suspension, and the 14 DOF model in the lap simulation | Published. Added 2026-10-05, not on the original roster. |
 
 Numbering follows the plan roster. The three drafts sit in `src/data/projects.ts` with `draft: true`
 and their plan headline, so the roster is visible in the code, but they do not reach the build.
+
+Project 8 is new. It covers the engine map work, the suspension, and the 14 DOF transient model,
+written from the 14DOF and Reforged QSS reference notes and from `OpenLap_Reforged_FULL.m` itself.
+Both figures on it come from the quasi-steady run outputs, because no 14 DOF run has ever exported
+plots. The correlation numbers quoted in Result are the 14 DOF model's and are text only, not
+illustrated, which is deliberate: pairing them with a quasi-steady plot would misattribute them.
+
+If a 14 DOF run is ever exported with plots, a log-against-simulation trace belongs on that page.
 
 ## What each draft still needs
 
@@ -72,14 +81,32 @@ page stays vague on anything financial.
 - **Astro 7, not 5.** Astro 5 carries a critical advisory set including a base-path stripping bug that
   would land directly on this site's sub-path setup. The workflow pins Node 22, which Astro 7 requires.
 
+## The resume
+
+`OneDrive/Desktop/Resume/Matthew Jordan Resume .pdf` was supplied on 2026-10-05 and is published at
+`public/resume.pdf`, served at `/Project-Portfolio-and-Website/resume.pdf`. Its content also feeds the
+About page: education, GPA, Dean's List, the honor societies, the expanded tools table, the UAV work
+and the ELDS treasurer role.
+
+Published as-is on Matthew's instruction, 2026-10-05, including the phone number and the city, state
+and ZIP it carries. There is no street address on it, so the plan's checklist item is satisfied as
+written. Worth knowing: a phone number on a public page gets scraped, and replacing the file later
+does not un-index what was already crawled.
+
+**One thing is still inconsistent and it is visible to a recruiter.** The resume says "Systems
+Engineer Lead" and "Cooling Systems Engineer". The site says "Cooling Senior Engineer" and "Systems
+Engineering Lead", which is what the plan asks for verbatim. Anyone opening both sees two different
+titles for the same two jobs. Fixing it means editing either the resume or the plan's locked titles,
+so it is a decision rather than a cleanup.
+
 ## Before the link goes on a resume
 
 Still open from the plan's own checklist:
 
 - [ ] **Team leadership approval to publish.** Project 3 would put CR27I scoring targets on a public
       page. Nothing is published yet, so this is still ahead of the decision, not behind it.
-- [ ] Write a public resume variant with no street address, put it in `public/resume.pdf`, set
-      `resumeUrl` in `src/data/site.ts`.
+- [x] Publish the resume. Done 2026-10-05, as-is, per the section above.
+- [ ] Reconcile the role titles between the resume and the site.
 - [ ] Add the LinkedIn URL to `src/data/site.ts`.
 - [ ] Decide whether the MATLAB source goes in this repo or in separate per-project repos, then set
       each project's `repo` field. Nothing links to code right now.

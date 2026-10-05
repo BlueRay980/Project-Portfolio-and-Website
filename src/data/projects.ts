@@ -5,6 +5,8 @@ import ductShroud from '../assets/duct-shroud-before-layup.jpg';
 import ductFinished from '../assets/duct-finished.jpg';
 import radiatorPlot from '../assets/radiator-heat-rejection.png';
 import evPlot from '../assets/ev-power-limit.png';
+import torqueMap from '../assets/engine-torque-map.png';
+import wheelLoads from '../assets/wheel-loads.png';
 
 export type Role = 'Cooling Senior Engineer' | 'Systems Engineering Lead';
 export type Category = 'Cooling' | 'Systems Engineering';
@@ -294,6 +296,110 @@ export const projects: Project[] = [
       'It has been run against logged data, not live in the car.',
     ],
     tools: ['MATLAB', 'Kalman filtering', 'MoTeC i2 logging and analysis'],
+  },
+
+  {
+    slug: 'lapsim-torque-maps-suspension-14dof',
+    num: 8,
+    title: 'Torque maps, suspension, and the 14 DOF model in the lap simulation',
+    role: 'Systems Engineering Lead',
+    category: 'Systems Engineering',
+    headline:
+      'A 2-D engine map, a suspended 14 degree-of-freedom car, and a correlation campaign against logged laps. The transient model lands within 0.6% of the logged Endurance lap at lateral R-squared 0.965.',
+    thumb: torqueMap,
+    thumbAlt:
+      'Three-dimensional surface plot of engine torque against engine speed and engine load, rising to about 49 Nm.',
+    repo: null,
+    problem: [
+      'The team ran a quasi-steady point-mass lap simulation. It solves corner speeds from a grip envelope and marches forward and backward to a lap time, and for ranking aero or mass changes that is enough. For anything else it is not. A point mass has no suspension, so it cannot answer a spring rate question, cannot produce a damper trace, and cannot show load moving across the car. Its engine was a single wide-open-throttle torque curve, so it could not say where in the engine map the car was actually operating, and therefore could not predict fuel use or efficiency-event scoring.',
+      'That gap showed up in how the model had to be tuned. Calibrating the quasi-steady model to five logged laps of the same car needed a grip constant spanning 0.690 to 0.891, a 29% range. A tyre does not change by 29% between sessions. That number was absorbing everything the model did not represent.',
+    ],
+    myRole: [
+      'As Systems Engineering Lead I built the transient model, replaced the single torque curve with the 2-D engine map path, added the suspension, and ran the correlation campaign against logged laps. The torque map correction below is a defect I found in my own driveline maths.',
+    ],
+    approach: [
+      'The transient model carries fourteen degrees of freedom: six for the sprung mass, four unsprung vertical, and four wheel spins. It integrates with RK4 at a 2 ms step, steers with a closed-loop Stanley path follower, and holds speed with a PI controller. It runs in three target modes: predictive, log replay for correlation against a measured lap, and replay of a driver preset built from that driver telemetry.',
+      'The suspension is what makes the other two useful. Because the car has sprung and unsprung masses and real wheel rates, load transfer and roll fall out of the simulation rather than being assumed. Roll gradient becomes a result that can be checked against the car instead of an input.',
+      'For the engine I replaced the wide-open-throttle torque curve with the 2-D map from the vehicle workbook, indexed on engine speed and engine load, so the acceleration limit comes from the operating point the car is actually at. Fuel flow and efficiency maps sit on the same axes and feed the fuel model, which is what lets the simulation predict efficiency-event scoring rather than lap time alone.',
+    ],
+    specs: [
+      { label: 'States', value: '6 sprung-mass DOF, 4 unsprung vertical, 4 wheel spins' },
+      { label: 'Integration', value: 'RK4 at a 2 ms fixed step' },
+      { label: 'Control', value: 'Closed-loop Stanley path follower, PI speed controller' },
+      { label: 'Target modes', value: 'Predictive, logged-lap replay, driver preset replay' },
+      { label: 'Engine', value: '2-D torque, fuel flow and efficiency maps on engine speed and load' },
+    ],
+    code: [
+      {
+        title: 'The correction: the workbook map is gear torque, not crank torque',
+        lang: 'matlab',
+        code: [
+          '% The EngineSpecs 2-D map is "Gear Torque" = crank torque * a constant gear',
+          '% factor, but the driveline below multiplies en_torque_curve by',
+          '% primary/gearbox/final as if it were CRANK torque, so the engine was',
+          '% over-torqued ~3x, and the fuel path compared a CRANK torque demand',
+          '% against the GEAR-torque map. Rescale the map to true crank torque.',
+          'gb_ratio = engine_gear_brake_ratio(filename);',
+          'veh.engine_map.torque = veh.engine_map.torque / gb_ratio;',
+          'veh.engine_gear_factor = gb_ratio;',
+        ].join('\n'),
+      },
+      {
+        title: 'Acceleration limit taken from the live map operating point',
+        lang: 'matlab',
+        code: [
+          'gear_sel = round(interp1(veh.vehicle_speed, veh.gear, v, \'nearest\', \'extrap\'));',
+          'rpm = veh.ratio_final * veh.ratio_gearbox(gear_sel) * veh.ratio_primary ...',
+          '      * v / veh.tyre_radius * 60/(2*pi);',
+          'rpm = min(max(rpm, veh.engine_map.rpmAxis(1)), veh.engine_map.rpmAxis(end));',
+          '',
+          'tq_Nm = engineTorque(rpm, pedal, \'Map\', veh.engine_map, \'Units\', \'Nm\');',
+          'wheel_tq = tq_Nm * veh.ratio_primary * veh.ratio_gearbox(gear_sel) * veh.ratio_final ...',
+          '           * veh.n_primary * veh.n_gearbox * veh.n_final;',
+          'Fx = wheel_tq / veh.tyre_radius;',
+        ].join('\n'),
+      },
+    ],
+    figures: [
+      {
+        src: torqueMap,
+        alt: 'Three-dimensional surface plot titled CR26I Torque Map from EngineSpecs, with engine load in kilopascals on one horizontal axis from 20 to 100, engine speed in rpm on the other from 4000 to 14000, and torque in newton metres rising from near zero at low load to about 49 at high load and mid engine speed.',
+        caption:
+          'The 2-D engine map the acceleration limit is taken from, after the gear-torque correction. Peak crank torque lands near 49 Nm, which is the number the correction was validated against.',
+      },
+      {
+        src: wheelLoads,
+        alt: 'Four panels of wheel load data over one Endurance lap: individual loads at all four corners against distance, front and rear axle loads with the total, front load share against distance scattering either side of 50 percent, and a track map coloured by total wheel load.',
+        caption:
+          'Load at all four corners over one Endurance lap. This is the output a point-mass model cannot produce: the total load trace drops where the car is light over crests and the front share swings either side of 50% through braking and corner exit.',
+      },
+    ],
+    callout: {
+      title: 'The engine was over-torqued by about three times, and the workbook column name is why',
+      body: [
+        'The vehicle workbook stores two torque columns, gear torque and brake torque. The 2-D map was built from the gear torque column, which is crank torque already multiplied by a constant gear factor. The driveline code then multiplied it again by primary, gearbox, and final drive ratios, as though it were crank torque.',
+        'The result was an engine roughly three times too strong, and a fuel path that was comparing a crank torque demand against a gear torque map, so the two were inconsistent as well as wrong. Nothing errored. The car simply accelerated harder than it could.',
+        'The fix takes the gear factor from the workbook itself rather than hard-coding it: the two columns are read, their ratio is taken row by row, and the median is used, which comes out at 2.9946. Rescaling the map puts peak crank torque near 36.8 lb-ft, about 49 Nm, matching the published engine spec. That is the check that confirmed it.',
+        'It is worth saying what this cost: the correction moves acceleration, top speed, engine load, and the whole fuel path, so every sweep result predating it shifts and the fuel correction factor had to be recalibrated.',
+      ],
+    },
+    result: [
+      'On the Endurance lap the transient model runs 141.39 s against a logged 142.22 s, 0.6% fast. Band-limited at 40 m the correlation is R-squared 0.994 on speed, 0.885 on longitudinal G, 0.965 on lateral G, and 0.969 on yaw rate.',
+      'The suspension model checks out independently: simulated roll gradient is 0.499 deg/g against 0.506 measured on the car. That number is a result of the spring, damper and anti-roll bar rates, not an input, so it is a real test of the suspension model.',
+      'Held to one identical tune across four more events, the model lands +0.4% on Autocross 2026, +1.9% on Autocross 2025, +2.7% on Boneyard 2025, and +3.9% on Endurance 2025.',
+      'The correlation campaign produced a finding worth more than the lap times: lateral agreement is governed by whether the track file was built from the same log being replayed. Running the same car, same tune, and same log against two different track files for one event gave 152.71 s with no lateral signal against 143.70 s at R-squared 0.836. A 9 s lap-time error and the entire lateral correlation came from a 100 m track-length error and nothing else.',
+      'The model and its data layer are ported to Python with numpy, scipy and openpyxl, reproducing the reference lap to every digit over 70,695 integration steps. A separate check rebuilds 17 derived quantities, including wheel loads, camber, slip and damper motion, from the reference run states and matches at float64 round-off, which tests the force model independently of the integrator.',
+    ],
+    limitations: [
+      'In log replay the speed profile is imposed, so the speed correlation is high by construction and should not be read as a prediction. The lateral and yaw figures are the ones that mean something.',
+      'The gear selector picks gear from a speed lookup with no hysteresis, so it chatters. The model changes gear 36 to 58 times a lap where the real car changes 13 to 18. Adding a dwell time is the fix and it is not done.',
+      'No single shift point fits the courses. Logged time in first gear ranges from 4.8% to 50.1% depending on the course, so a global shift-rpm array is wrong somewhere by construction. It should come from the per-event driver preset, which already carries a measured value.',
+      'The engine map rpm axis ends at 14500 and torque is held flat above it, so any operating point past that is extrapolating.',
+      'The electric car cannot run this model. Its workbook has torque curve, motor efficiency and power limit data but no suspension sheet at all, so the suspension model has nothing to build from.',
+      'Three of the older track files are 9 to 10.5 m out of registration with the logs they are compared against, which is why their lateral correlation collapses. The fix is to rebuild those tracks from their own logs, not to tune the car.',
+      'The grip constant in the quasi-steady model remains a per-event lap-time calibration, not a tyre property. Treat tuned constants as specific to one solver on one event.',
+    ],
+    tools: ['MATLAB', 'Python (numpy, scipy, openpyxl)', 'MoTeC i2 logging and analysis', 'Excel'],
   },
 
   // ---------------------------------------------------------------------------

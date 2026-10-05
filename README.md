@@ -47,12 +47,11 @@ reach `dist/`.
 
 ### Things that are deliberately switchable
 
-`src/data/site.ts` holds three values that are currently `null`:
+`src/data/site.ts` holds the links that can be turned on and off without touching a page:
 
-- `resumeUrl` is null, so the Resume nav item and the home-page button are replaced by a plain
-  "Resume available on request" line rather than a dead link. Set it to `'resume.pdf'` after putting
-  a public resume variant in `public/`.
-- `linkedin` is null, so no LinkedIn link renders.
+- `resumeUrl` points at `resume.pdf` in `public/`. Setting it to null pulls the Resume nav item and
+  the home-page button and falls back to an "available on request" line, so there is never a dead link.
+- `linkedin` is null, so no LinkedIn link renders. Set it to the profile URL to turn it on.
 - Every project's `repo` is null, so no "Source repository" link renders.
 
 ## Deployment

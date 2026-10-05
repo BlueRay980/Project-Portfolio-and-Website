@@ -7,9 +7,25 @@ import { url } from '../lib/url';
 // the "Other" row there; it is listed under Certifications here instead, so it
 // does not appear twice on one page.
 const tools = [
-  { group: 'Analysis', items: 'MATLAB (heat transfer, lap simulation, state estimation), Python, Fortran' },
-  { group: 'Design and build', items: 'SolidWorks, GD&T, carbon fiber layup, manual and CNC lathe' },
+  {
+    group: 'Analysis',
+    items: 'MATLAB (heat transfer, lap simulation, state estimation), Python, Fortran; numerical methods, simulation, data analysis',
+  },
+  {
+    group: 'Design and build',
+    items: 'SolidWorks, Siemens NX, Fusion 360, GD&T-driven part design, carbon fiber layup, manual and CNC lathe',
+  },
   { group: 'Data', items: 'MoTeC i2 logging and analysis, GT-SUITE engine modeling, Excel' },
+  {
+    group: 'Domain',
+    items: 'Vehicle dynamics and lap simulation, powertrain, thermal and cooling systems, aerodynamics trade studies, computational physics',
+  },
+];
+
+const education = [
+  'B.S. Mechanical Engineering and B.S. Aerospace Engineering, GPA 3.5 / 4.0',
+  "Dean's List, Spring 2025",
+  'Alpha Lambda Delta and Lambda Sigma honor societies',
 ];
 
 const certifications = [
@@ -46,6 +62,18 @@ const certifications = [
           check that caught it is the useful part of the story. Every project page on this site states its own
           assumptions and what I would do differently.
         </p>
+
+        <p>
+          Outside the team I hold an FAA Part 107 Remote Pilot Certificate and fly UAV missions as a
+          freelance aerial photographer, and I served as Treasurer of the Engineering Leadership and
+          Development Society.
+        </p>
+
+        <h2>Education</h2>
+        <p>The University of Alabama, Tuscaloosa. August 2024 to May 2028.</p>
+        <ul>
+          {education.map((item) => <li>{item}</li>)}
+        </ul>
 
         <h2>Tools</h2>
         <table class="tools-table">
