@@ -1,9 +1,16 @@
 ---
+import { getImage } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import { site } from '../data/site';
 import { featured } from '../data/projects';
 import { url } from '../lib/url';
+import heroSrc from '../assets/cr26i-campus.jpg';
+
+// Served as WebP at two widths rather than the 473 kB original, since this is
+// the first thing a recruiter loads and often on a phone.
+const heroWide = await getImage({ src: heroSrc, format: 'webp', width: 1800, quality: 72 });
+const heroNarrow = await getImage({ src: heroSrc, format: 'webp', width: 900, quality: 70 });
 ---
 
 <Base
@@ -11,7 +18,7 @@ import { url } from '../lib/url';
   description="Engineering portfolio. Cooling Senior Engineer and Systems Engineering Lead on Crimson Racing, the University of Alabama Formula SAE team."
   path="/"
 >
-  <section class="hero">
+  <section class="hero" style={`background-image:url('${heroWide.src}')`}>
     <div class="wrap">
       <h1>{site.name}</h1>
       <p class="degree">{site.degree}</p>
@@ -46,9 +53,19 @@ import { url } from '../lib/url';
       <ul class="cards">
         {featured.map((project) => <ProjectCard project={project} />)}
       </ul>
-      <p style="margin-top:1.25rem">
-        <a href={url('/projects')}>All projects</a>
+      <p style="margin-top:1.5rem">
+        <a href={url('/projects')}>All eight projects</a>
       </p>
     </div>
   </section>
 </Base>
+
+<style define:vars={{ heroNarrow: `url('${heroNarrow.src}')` }}>
+  /* Phones get the 900px crop. Saves roughly two thirds of the bytes on the
+     one image a recruiter opening a link from email will actually wait for. */
+  @media (max-width: 48rem) {
+    .hero {
+      background-image: var(--heroNarrow) !important;
+    }
+  }
+</style>

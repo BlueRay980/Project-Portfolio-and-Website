@@ -135,6 +135,38 @@ Engineering Lead", which is what the plan asks for verbatim. Anyone opening both
 titles for the same two jobs. Fixing it means editing either the resume or the plan's locked titles,
 so it is a decision rather than a cleanup.
 
+## Look and feel
+
+Palette, set 2026-10-05 from the supplied swatches:
+
+| token | hex | used for |
+|---|---|---|
+| Blackened Pearl | `#4d4b50` | footer, and the base the hero scrim is built from |
+| Wisteria | `#a198af` | borders, heading bars, chips, rules, the card placeholder gradient |
+| Whisper White | `#ede6db` | page background |
+
+**Wisteria is 2.22:1 on Whisper White, so it never carries text.** `--accent`
+(`#575166`) is Wisteria darkened to 6.11:1 and does the work Wisteria cannot:
+links, role tags, callout rules, active filter pills. `--ink` (`#322f36`) is
+Blackened Pearl darkened for long-form reading at 10.62:1.
+
+Every text element was measured in the browser with alpha properly composited
+against its painted background. All pass WCAG AA: body and prose 10.62, h2
+10.62, callout title 7.54, callout body 9.34, headline 5.69, chips 6.96,
+figcaption 5.00, footer 5.79, links 6.11.
+
+The CR26I campus photo is the home hero background, behind a gradient scrim.
+It is served as WebP at two widths through `getImage`, 141 kB wide and 45 kB
+at phone size, rather than the 473 kB original. The scrim goes left-to-right
+on desktop so the car stays visible on the right, and nearly uniform under
+48rem because text wraps the full width on a phone and would otherwise end
+each line on the bright side.
+
+**The charts were deliberately left navy and crimson.** Four of the six figures
+are MATLAB exports that cannot be recoloured without re-running the models, so
+matching the two hand-drawn SVGs to the site palette would make the figure set
+less consistent, not more.
+
 ## Before the link goes on a resume
 
 Still open from the plan's own checklist:

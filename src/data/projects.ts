@@ -230,6 +230,15 @@ export const projects: Project[] = [
           'Left: each point is one power cap strategy. Navy points finish inside the energy budget, grey points run out of energy before the flag. The circled case is the quickest strategy that still finishes. Right: lap time against the power actually available at each strategy average lap speed.',
       },
     ],
+    callout: {
+      title: 'These numbers predate a correction to the simulation, and I have left them up rather than quietly restating them',
+      body: [
+        'In October 2026 I found three defects in the quasi-steady model this study ran on. Vertical load was adding weight and downforce instead of subtracting, so downforce was reducing tyre load rather than increasing it. Drag and rolling resistance were being subtracted where the coefficients are stored negative, so both were adding thrust instead of taking it away. And the acceleration traction limit was built from the raw tyre coefficients without the grip scaling factor, so tuning grip moved corner speeds and braking but left the acceleration cap untouched.',
+        'All three are fixed. None of the numbers on this page have been regenerated yet.',
+        'What I expect to move, and what I do not: this study is a ranking of 36 strategies against each other under one fixed energy budget, and all 36 were scored by the same model with the same defects. A ranking is far more robust to a systematic error than the absolute figures are. The lap times were almost certainly optimistic, because the car was being given thrust it did not have, so the energy figures are the ones I would trust least.',
+        'The honest status is that the shape of the conclusion stands and the numbers are pending a re-run. I would rather say that than take the page down or silently swap figures nobody has checked.',
+      ],
+    },
     result: [
       'The quickest strategy that finishes is a 20.5 kW hold tapering from 15 m/s to 4 kW, giving a 65.58 s lap at 4.023 kWh over 22 laps, which is 53 Wh inside the budget.',
       'Tapering beats a flat cap. Against a flat 20.5 kW baseline, the selected taper is 0.44 s per lap slower but uses 11.7% less energy, which is what converts a strategy that does not finish into one that does.',
@@ -239,7 +248,8 @@ export const projects: Project[] = [
     limitations: [
       'This is a quasi-steady-state simulation, so it does not capture transient yaw behavior or driver variation, and it assumes a repeatable racing line every lap.',
       'Pack voltage sag and cell temperature rise over a 22-lap run are not modeled, both of which would tighten the real energy budget.',
-      'I would treat the ranking between strategies as more trustworthy than the absolute lap times.',
+      'I would treat the ranking between strategies as more trustworthy than the absolute lap times. That was true before the correction above and it is more true after it.',
+      'The figures on this page come from the pre-correction model. They have not been regenerated, and the callout above says exactly which three defects were in play.',
     ],
     tools: ['MATLAB', 'Quasi-steady-state lap simulation', 'Excel'],
   },

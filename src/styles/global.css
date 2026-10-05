@@ -1,16 +1,27 @@
 /* Portfolio styles. No framework, no runtime JS beyond the projects filter.
-   Everything here is sized so the home page reads without scrolling on a phone. */
+
+   Palette: Blackened Pearl #4d4b50, Wisteria #a198af, Whisper White #ede6db.
+   Measured against Whisper White: Blackened Pearl is 6.95:1 and carries text,
+   Wisteria is 2.22:1 and does not, so Wisteria is borders, fills and
+   decoration only. --accent is Wisteria darkened to 6.11:1 so links and
+   headings keep its character while staying readable. */
 
 :root {
-  --navy: #16365c;
-  --navy-deep: #0e2340;
-  --crimson: #9e1b32;
-  --ink: #1a1d21;
-  --muted: #5b6470;
-  --rule: #dfe3e8;
-  --bg: #ffffff;
-  --bg-soft: #f6f8fa;
-  --bg-code: #0e2340;
+  --pearl: #4d4b50;
+  --wisteria: #a198af;
+  --whisper: #ede6db;
+
+  --ink: #322f36;
+  --muted: #645f6b;
+  --accent: #575166;
+  --accent-deep: #413c4d;
+
+  --bg: #ede6db;
+  --surface: #f8f5ef;
+  --rule: #d8d1c5;
+  --rule-soft: #e4ded3;
+  --code-bg: #35333a;
+
   --max: 68rem;
   --measure: 38rem;
 }
@@ -31,7 +42,7 @@ body {
   color: var(--ink);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   font-size: 17px;
-  line-height: 1.6;
+  line-height: 1.65;
 }
 
 img {
@@ -41,12 +52,12 @@ img {
 }
 
 a {
-  color: var(--navy);
+  color: var(--accent);
   text-underline-offset: 2px;
 }
 
 a:hover {
-  color: var(--crimson);
+  color: var(--accent-deep);
 }
 
 .wrap {
@@ -59,7 +70,7 @@ a:hover {
 
 .site-header {
   border-bottom: 1px solid var(--rule);
-  background: var(--bg);
+  background: var(--surface);
 }
 
 .site-header .wrap {
@@ -73,7 +84,7 @@ a:hover {
 
 .site-header .brand {
   font-weight: 700;
-  color: var(--navy-deep);
+  color: var(--ink);
   text-decoration: none;
   letter-spacing: -0.01em;
 }
@@ -90,37 +101,69 @@ a:hover {
   color: var(--muted);
 }
 
+.site-header nav a:hover {
+  color: var(--accent);
+}
+
 .site-header nav a[aria-current='page'] {
-  color: var(--navy-deep);
+  color: var(--ink);
   font-weight: 600;
 }
 
-/* ---------- hero ---------- */
+/* ---------- hero with the car behind it ---------- */
 
 .hero {
-  padding: 2.5rem 0 1.75rem;
+  position: relative;
+  background-color: var(--pearl);
+  background-size: cover;
+  background-position: center 58%;
+  color: #fff;
+  padding: 5.5rem 0 5rem;
+  border-bottom: 3px solid var(--wisteria);
+}
+
+/* Scrim. The photo has a bright sky and lit grass, so text needs a real
+   gradient behind it rather than a flat tint. */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    rgba(38, 36, 42, 0.94) 0%,
+    rgba(43, 41, 48, 0.88) 38%,
+    rgba(52, 49, 59, 0.58) 66%,
+    rgba(66, 62, 74, 0.3) 100%
+  );
+}
+
+.hero .wrap {
+  position: relative;
 }
 
 .hero h1 {
-  font-size: clamp(1.9rem, 6vw, 2.6rem);
-  line-height: 1.15;
-  letter-spacing: -0.02em;
-  margin: 0 0 0.4rem;
-  color: var(--navy-deep);
+  font-size: clamp(2rem, 6.5vw, 3rem);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  margin: 0 0 0.6rem;
+  color: #fff;
 }
 
 .hero .degree {
-  margin: 0 0 0.35rem;
-  font-size: 1.02rem;
+  margin: 0 0 0.4rem;
+  font-size: 1.05rem;
+  color: #f0ebe3;
+  max-width: 40rem;
 }
 
 .hero .roles {
-  margin: 0 0 1.1rem;
-  color: var(--muted);
+  margin: 0 0 1.5rem;
+  color: #d5cfdd;
+  max-width: 40rem;
 }
 
 .hero .roles strong {
-  color: var(--ink);
+  color: #fff;
   font-weight: 600;
 }
 
@@ -133,31 +176,60 @@ a:hover {
 
 .btn {
   display: inline-block;
-  padding: 0.5rem 1rem;
+  padding: 0.55rem 1.15rem;
   border-radius: 4px;
   text-decoration: none;
   font-size: 0.95rem;
   font-weight: 600;
-  border: 1px solid var(--navy);
+  border: 1px solid transparent;
+}
+
+.hero .btn-primary {
+  background: var(--whisper);
+  color: var(--ink);
+  border-color: var(--whisper);
+}
+
+.hero .btn-primary:hover {
+  background: #fff;
+  color: var(--ink);
+}
+
+.hero .btn-quiet {
+  background: transparent;
+  color: #fff;
+  border-color: rgba(237, 230, 219, 0.55);
+}
+
+.hero .btn-quiet:hover {
+  border-color: #fff;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .btn-primary {
-  background: var(--navy);
+  background: var(--accent);
   color: #fff;
+  border-color: var(--accent);
 }
 
 .btn-primary:hover {
-  background: var(--navy-deep);
+  background: var(--accent-deep);
   color: #fff;
 }
 
 .btn-quiet {
   background: transparent;
-  color: var(--navy);
+  color: var(--accent);
+  border-color: var(--wisteria);
 }
 
 .btn-quiet:hover {
-  border-color: var(--crimson);
+  border-color: var(--accent);
+}
+
+.hero .note-inline {
+  color: #e3ddd4;
 }
 
 .note-inline {
@@ -168,16 +240,26 @@ a:hover {
 /* ---------- sections ---------- */
 
 .section {
-  padding: 1.5rem 0 2.5rem;
+  padding: 2.5rem 0 3rem;
 }
 
 .section > h2 {
-  font-size: 1.15rem;
-  letter-spacing: 0.02em;
+  font-size: 0.95rem;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--muted);
-  margin: 0 0 1rem;
-  font-weight: 600;
+  margin: 0 0 1.25rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.section > h2::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--rule);
 }
 
 /* ---------- cards ---------- */
@@ -193,11 +275,17 @@ a:hover {
 
 .card {
   border: 1px solid var(--rule);
-  border-radius: 6px;
+  border-radius: 7px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  background: var(--bg);
+  background: var(--surface);
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.card:hover {
+  border-color: var(--wisteria);
+  transform: translateY(-2px);
 }
 
 .card a.card-link {
@@ -208,15 +296,11 @@ a:hover {
   height: 100%;
 }
 
-.card a.card-link:hover {
-  background: var(--bg-soft);
-}
-
 .card .thumb {
   aspect-ratio: 16 / 9;
   object-fit: cover;
   width: 100%;
-  background: var(--bg-soft);
+  background: #fff;
   border-bottom: 1px solid var(--rule);
 }
 
@@ -230,19 +314,20 @@ a:hover {
   aspect-ratio: 16 / 9;
   display: grid;
   place-items: center;
-  background: var(--bg-soft);
+  background: linear-gradient(135deg, var(--wisteria) 0%, var(--pearl) 100%);
   border-bottom: 1px solid var(--rule);
-  color: var(--muted);
-  font-size: 0.85rem;
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 600;
   padding: 1rem;
   text-align: center;
 }
 
 .card .card-body {
-  padding: 0.9rem 1rem 1.1rem;
+  padding: 0.95rem 1.1rem 1.2rem;
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.45rem;
   flex: 1;
 }
 
@@ -250,22 +335,22 @@ a:hover {
   margin: 0;
   font-size: 1.05rem;
   line-height: 1.3;
-  color: var(--navy-deep);
+  color: var(--ink);
 }
 
 .card .role-tag {
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--crimson);
-  font-weight: 600;
+  letter-spacing: 0.09em;
+  color: var(--accent);
+  font-weight: 700;
 }
 
 .card p {
   margin: 0;
   font-size: 0.93rem;
   color: var(--muted);
-  line-height: 1.5;
+  line-height: 1.55;
 }
 
 /* ---------- filter ---------- */
@@ -274,7 +359,7 @@ a:hover {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin: 0 0 1.5rem;
+  margin: 0 0 1.75rem;
   padding: 0;
   border: 0;
 }
@@ -282,17 +367,21 @@ a:hover {
 .filter button {
   font: inherit;
   font-size: 0.9rem;
-  padding: 0.35rem 0.85rem;
+  padding: 0.38rem 0.95rem;
   border: 1px solid var(--rule);
-  background: var(--bg);
+  background: var(--surface);
   border-radius: 999px;
   cursor: pointer;
   color: var(--muted);
 }
 
+.filter button:hover {
+  border-color: var(--wisteria);
+}
+
 .filter button[aria-pressed='true'] {
-  background: var(--navy);
-  border-color: var(--navy);
+  background: var(--accent);
+  border-color: var(--accent);
   color: #fff;
   font-weight: 600;
 }
@@ -300,47 +389,49 @@ a:hover {
 /* ---------- project page ---------- */
 
 .project-head {
-  padding: 2.25rem 0 1.25rem;
+  background: var(--surface);
+  padding: 2.75rem 0 1.75rem;
   border-bottom: 1px solid var(--rule);
 }
 
 .project-head h1 {
-  font-size: clamp(1.6rem, 5vw, 2.2rem);
+  font-size: clamp(1.7rem, 5vw, 2.3rem);
   line-height: 1.2;
-  letter-spacing: -0.02em;
-  margin: 0.3rem 0 0.6rem;
-  color: var(--navy-deep);
+  letter-spacing: -0.022em;
+  margin: 0.35rem 0 0.7rem;
+  color: var(--ink);
 }
 
 .project-head .role-tag {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--crimson);
+  letter-spacing: 0.1em;
+  color: var(--accent);
   font-weight: 700;
 }
 
 .project-head .headline {
   margin: 0;
-  font-size: 1.05rem;
+  font-size: 1.08rem;
+  color: var(--muted);
   max-width: var(--measure);
 }
 
 .prose {
-  padding: 1.5rem 0 3rem;
+  padding: 2rem 0 3.5rem;
 }
 
 .prose h2 {
-  font-size: 1.3rem;
-  color: var(--navy-deep);
-  margin: 2.25rem 0 0.6rem;
-  padding-top: 0.4rem;
-  border-top: 2px solid var(--navy);
-  display: inline-block;
+  font-size: 1.28rem;
+  color: var(--ink);
+  margin: 2.5rem 0 0.7rem;
+  padding-left: 0.75rem;
+  border-left: 4px solid var(--wisteria);
+  line-height: 1.25;
 }
 
 .prose h2:first-of-type {
-  margin-top: 0.5rem;
+  margin-top: 0;
 }
 
 .prose p,
@@ -349,7 +440,7 @@ a:hover {
 }
 
 .prose p {
-  margin: 0 0 0.9rem;
+  margin: 0 0 0.95rem;
 }
 
 .prose ul {
@@ -358,68 +449,84 @@ a:hover {
 }
 
 .prose li {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.6rem;
+}
+
+.prose li::marker {
+  color: var(--wisteria);
 }
 
 .spec-table {
   border-collapse: collapse;
   width: 100%;
   max-width: 48rem;
-  margin: 0.25rem 0 1.5rem;
+  margin: 0.25rem 0 1.75rem;
   font-size: 0.95rem;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
 }
 
 .spec-table th,
 .spec-table td {
   text-align: left;
   vertical-align: top;
-  padding: 0.5rem 0.75rem 0.5rem 0;
-  border-bottom: 1px solid var(--rule);
+  padding: 0.6rem 0.9rem;
+  border-bottom: 1px solid var(--rule-soft);
+}
+
+.spec-table tr:last-child th,
+.spec-table tr:last-child td {
+  border-bottom: 0;
 }
 
 .spec-table th {
   width: 11rem;
   font-weight: 600;
-  color: var(--navy-deep);
+  color: var(--ink);
   white-space: nowrap;
 }
 
 figure {
-  margin: 1.5rem 0;
+  margin: 1.75rem 0;
 }
 
 figure img {
   border: 1px solid var(--rule);
-  border-radius: 4px;
+  border-radius: 6px;
+  background: #fff;
 }
 
 figcaption {
   font-size: 0.88rem;
   color: var(--muted);
-  margin-top: 0.5rem;
+  margin-top: 0.6rem;
   max-width: var(--measure);
+  line-height: 1.55;
 }
 
 .code-block {
-  margin: 1.25rem 0 1.5rem;
+  margin: 1.25rem 0 1.75rem;
 }
 
 .code-block .code-title {
-  font-size: 0.88rem;
-  font-weight: 600;
-  color: var(--navy-deep);
-  margin-bottom: 0.4rem;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 0.45rem;
+  letter-spacing: 0.01em;
 }
 
 .code-block pre {
   margin: 0;
-  background: var(--bg-code);
-  color: #e8edf4;
-  padding: 0.9rem 1rem;
-  border-radius: 5px;
+  background: var(--code-bg);
+  color: #e9e4dc;
+  padding: 1rem 1.1rem;
+  border-radius: 6px;
   overflow-x: auto;
   font-size: 0.82rem;
-  line-height: 1.55;
+  line-height: 1.6;
+  border: 1px solid #2a282e;
 }
 
 .code-block code {
@@ -427,36 +534,42 @@ figcaption {
 }
 
 .callout {
-  border-left: 4px solid var(--crimson);
-  background: var(--bg-soft);
-  padding: 1rem 1.1rem 0.4rem;
-  border-radius: 0 5px 5px 0;
-  margin: 1.5rem 0;
+  border-left: 5px solid var(--accent);
+  background: rgba(161, 152, 175, 0.18);
+  padding: 1.1rem 1.25rem 0.5rem;
+  border-radius: 0 6px 6px 0;
+  margin: 1.75rem 0;
 }
 
 .callout h3 {
-  margin: 0 0 0.6rem;
-  font-size: 1.02rem;
-  color: var(--crimson);
+  margin: 0 0 0.7rem;
+  font-size: 1.05rem;
+  color: var(--accent-deep);
+  line-height: 1.35;
+}
+
+.callout p {
+  color: var(--ink);
 }
 
 .tool-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
+  gap: 0.45rem;
   list-style: none;
   padding: 0;
-  margin: 0.25rem 0 1rem;
+  margin: 0.25rem 0 1.25rem;
 }
 
 .tool-chips li {
   font-size: 0.85rem;
-  padding: 0.25rem 0.7rem;
-  background: var(--bg-soft);
-  border: 1px solid var(--rule);
+  padding: 0.3rem 0.8rem;
+  background: var(--surface);
+  border: 1px solid var(--wisteria);
   border-radius: 999px;
-  color: var(--muted);
+  color: var(--accent);
   margin: 0;
+  font-weight: 500;
 }
 
 .pager {
@@ -464,7 +577,8 @@ figcaption {
   justify-content: space-between;
   gap: 1rem;
   border-top: 1px solid var(--rule);
-  padding-top: 1.25rem;
+  padding-top: 1.5rem;
+  margin-top: 2rem;
   font-size: 0.95rem;
 }
 
@@ -474,36 +588,53 @@ figcaption {
   border-collapse: collapse;
   width: 100%;
   max-width: 48rem;
-  margin: 0.5rem 0 1.5rem;
+  margin: 0.5rem 0 1.75rem;
   font-size: 0.95rem;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
 }
 
 .tools-table th,
 .tools-table td {
   text-align: left;
   vertical-align: top;
-  padding: 0.6rem 0.75rem 0.6rem 0;
-  border-bottom: 1px solid var(--rule);
+  padding: 0.7rem 0.9rem;
+  border-bottom: 1px solid var(--rule-soft);
+}
+
+.tools-table tr:last-child th,
+.tools-table tr:last-child td {
+  border-bottom: 0;
 }
 
 .tools-table th {
   width: 11rem;
   font-weight: 600;
-  color: var(--navy-deep);
+  color: var(--ink);
 }
 
 /* ---------- footer ---------- */
 
 .site-footer {
-  border-top: 1px solid var(--rule);
-  margin-top: 2rem;
-  padding: 1.5rem 0 2.5rem;
+  border-top: 3px solid var(--wisteria);
+  background: var(--pearl);
+  margin-top: 3rem;
+  padding: 2rem 0 2.5rem;
   font-size: 0.9rem;
-  color: var(--muted);
+  color: #d9d3c9;
 }
 
 .site-footer a {
-  color: var(--muted);
+  color: #efe9e0;
+}
+
+.site-footer a:hover {
+  color: #fff;
+}
+
+.site-footer p {
+  margin: 0 0 0.4rem;
 }
 
 .skip-link {
@@ -514,16 +645,21 @@ figcaption {
 .skip-link:focus {
   left: 1rem;
   top: 0.5rem;
-  background: #fff;
+  background: var(--whisper);
+  color: var(--ink);
   padding: 0.5rem 0.75rem;
-  border: 2px solid var(--navy);
+  border: 2px solid var(--accent);
   border-radius: 4px;
   z-index: 10;
 }
 
 :focus-visible {
-  outline: 3px solid var(--crimson);
+  outline: 3px solid var(--accent);
   outline-offset: 2px;
+}
+
+.hero :focus-visible {
+  outline-color: var(--whisper);
 }
 
 @media (max-width: 34rem) {
@@ -531,6 +667,29 @@ figcaption {
     font-size: 16px;
   }
   .hero {
-    padding-top: 1.75rem;
+    padding: 2.75rem 0 2.5rem;
+  }
+  /* Text wraps the full width on a phone, so the left-to-right scrim would
+     leave the last words of each line sitting on the bright side. Go nearly
+     uniform instead and let the photo read through the lower third. */
+  .hero::before {
+    background: linear-gradient(
+      170deg,
+      rgba(38, 36, 42, 0.92) 0%,
+      rgba(43, 41, 48, 0.88) 55%,
+      rgba(52, 49, 59, 0.74) 100%
+    );
+  }
+  .prose h2 {
+    margin-top: 2rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    transition: none;
+  }
+  .card:hover {
+    transform: none;
   }
 }
