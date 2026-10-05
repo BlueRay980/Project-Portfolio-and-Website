@@ -116,9 +116,15 @@ a:hover {
   position: relative;
   background-color: var(--pearl);
   background-size: cover;
-  background-position: center 58%;
+  /* The car sits in the lower third of the frame and is the point of the
+     photo, so anchor near the bottom. min-height keeps the crop from
+     collapsing into a letterbox of brickwork on a short wide window. */
+  background-position: center 88%;
   color: #fff;
   padding: 5.5rem 0 5rem;
+  min-height: min(26rem, 52vw);
+  display: flex;
+  align-items: center;
   border-bottom: 3px solid var(--wisteria);
 }
 
@@ -139,6 +145,7 @@ a:hover {
 
 .hero .wrap {
   position: relative;
+  width: 100%;
 }
 
 .hero h1 {
