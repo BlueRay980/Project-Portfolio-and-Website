@@ -540,6 +540,8 @@ export const projects: Project[] = [
       'The suspension model checks out independently: simulated roll gradient is 0.499 deg/g against 0.506 measured on the car. That number is a result of the spring, damper and anti-roll bar rates, not an input, so it is a real test of the suspension model.',
       'Held to one identical tune across four more events, the model lands +0.4% on Autocross 2026, +1.9% on Autocross 2025, +2.7% on Boneyard 2025, and +3.9% on Endurance 2025.',
       'The correlation campaign produced a finding worth more than the lap times: lateral agreement is governed by whether the track file was built from the same log being replayed. Running the same car, same tune, and same log against two different track files for one event gave 152.71 s with no lateral signal against 143.70 s at R-squared 0.836. A 9 s lap-time error and the entire lateral correlation came from a 100 m track-length error and nothing else.',
+      'The quasi-steady model in the same family was corrected in October 2026 and now predicts, untuned, 45.59 s on Michigan Autocross against a logged 42.28 s, and 130.81 s on Michigan Endurance against a logged 142.22 s. The two miss in opposite directions, which is the clearest evidence that one grip constant was never going to fit both events: it was absorbing a model error rather than describing a tyre.',
+      'That correction included a seam defect worth stating on its own. The solver was joining open courses end to end, which corrupted three points at the wrap. Fixing it moved the autocross lap time by 0.035 s and dropped peak longitudinal deceleration from -3.35 g to -0.933 g. A defect that ruins every peak statistic while costing almost nothing in lap time is exactly the kind that survives unnoticed, and it is why I check dynamics rather than lap time when validating a change.',
       'The model and its data layer are ported to Python with numpy, scipy and openpyxl, reproducing the reference lap to every digit over 70,695 integration steps. A separate check rebuilds 17 derived quantities, including wheel loads, camber, slip and damper motion, from the reference run states and matches at float64 round-off, which tests the force model independently of the integrator.',
     ],
     limitations: [
@@ -550,6 +552,7 @@ export const projects: Project[] = [
       'The electric car cannot run this model. Its workbook has torque curve, motor efficiency and power limit data but no suspension sheet at all, so the suspension model has nothing to build from.',
       'Three of the older track files are 9 to 10.5 m out of registration with the logs they are compared against, which is why their lateral correlation collapses. The fix is to rebuild those tracks from their own logs, not to tune the car.',
       'The grip constant in the quasi-steady model remains a per-event lap-time calibration, not a tyre property. Treat tuned constants as specific to one solver on one event.',
+      'Every grip constant fitted to the quasi-steady model before the October 2026 correction is invalid, because they were tuned against a solver that was over-accelerating. Any lap time it quotes now is an untuned prediction rather than a calibrated match, and a re-tune is outstanding.',
     ],
     tools: ['MATLAB', 'Python (numpy, scipy, openpyxl)', 'MoTeC i2 logging and analysis', 'Excel'],
   },
