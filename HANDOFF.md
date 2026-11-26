@@ -136,6 +136,12 @@ and "Cooling Senior Engineer", matching the site and the plan's locked titles. I
 Word source at `Desktop\Resume\Matthew Jordan Resume 9.13.2026.docx` and re-exported through Word
 itself, not patched in the PDF. Backups sit beside it stamped `_backup_20261005_182759`.
 
+**Replaced 2026-11-26** with `Downloads\Matthew_Jordan_Resume_11_26_26.pdf`, supplied as a finished PDF
+(no Word source here). The About page was synced to it: cumulative GPA 3.45, coursework, the APSU
+Governor's School, U.S. citizenship and the Summer 2027 internship search, the UAV hours and clients,
+and the Simulation row in the tools table. Its Cooling bullet still quotes the ~2.9 hp oil figure,
+which the radiator page no longer uses; see the note on page 2 under Editorial line.
+
 ## Editorial line, set 2026-10-06
 
 **Every page is written on the engineering, not on the debugging.** On 2026-10-06 Matthew's

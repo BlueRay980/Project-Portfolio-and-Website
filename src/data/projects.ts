@@ -722,7 +722,7 @@ export const projects: Project[] = [
       'The Sim Suite Reforged main window in a MoTeC i2 style layout: a run list on the left, stacked speed, throttle, brake and gear traces against distance in the middle, a track map on the right, and a channel list down the right edge.',
     repo: null,
     problem: [
-      'The lap simulations in projects 3, 4, 5 and 8 were MATLAB scripts. Running one meant a MATLAB licence, the right folder layout, and knowing which variables to edit at the top of which script, so in practice the simulation answered questions only for the few people who wrote it. Everyone else on the team asked them.',
+      'The lap simulations in projects 3, 4, 5 and 8 were MATLAB scripts built on OpenLAP, the open-source MATLAB lap time simulator by Michael Chalkiopoulos, which the team had extended with a 14 DOF transient model, an electric powertrain and competition scoring. Running one meant a MATLAB licence, the right folder layout, and knowing which variables to edit at the top of which script, so in practice the simulation answered questions only for the few people who wrote it. Everyone else on the team asked them.',
       'The scripts had also drifted apart. Three separate quasi-steady solvers had grown up in three scripts, each with its own lap solver, and on the same car they returned different autocross times. A design question could get a different answer depending on which script somebody happened to open.',
     ],
     myRole: [
