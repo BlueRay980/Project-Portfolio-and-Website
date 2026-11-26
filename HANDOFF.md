@@ -20,7 +20,7 @@ Written 2026-10-05, last updated 2026-10-06. This tracks the gap between the pla
 | # | Plan roster entry | Status |
 | --- | --- | --- |
 | 1 | Cooling duct for CR26 | Published. Full content from the portfolio PDF. |
-| 2 | NTU radiator sizing and oil down-select | Published. Full content, including the correlation validity callout. |
+| 2 | NTU radiator sizing and oil down-select | Published. Reframed 2026-11-26 as the water-against-oil selection: "why oil cannot meet 7 hp and water can". See the note under Editorial line. |
 | 3 | Aerodynamic design space against competition points | Published 2026-10-05. Retitled; see below. |
 | 4 | One-at-a-time parameter sensitivity study | Published 2026-10-05. Scoped to the OAT study only; the spring rate grid is not part of it. |
 | 5 | EV endurance power-limit study | Published. Full content from the portfolio PDF. |
@@ -162,10 +162,15 @@ models do not cover.
 - The EV page no longer labels its figures as predating the solver correction. They have still not
   been regenerated. The Known limitations entry says the ranking is more trustworthy than the
   absolute figures, which is the caveat that survived. Re-run the model and replace the numbers.
-- Page 2's figure shows two curves because the plot is a MATLAB export that compares them. The
-  caption now frames it as a turbulent correlation against the laminar entry-length form valid at
-  Reynolds 42, which is what the image actually shows. Do not retitle it as a single-curve plot
-  without re-running the model.
+- Page 2 was rebuilt on 2026-11-26 around the fluid choice. Every number on it comes from
+  `MATLAB Drive\RAD_DOE\rad_doe.m` (`rad_doe.model`, corrected geometry, regime-aware liquid side)
+  at 60 C coolant in, 33 C air, run once with `coolant` `water` and once with `motul10w40`: the
+  11-tube core (9.53 x 3.94 x 1.9755 in, 16 FPI, 35 L/min) swept 0 to 900 CFM, and a 3-level full
+  factorial on the seven geometry factors over the `rad_doe.factors` ranges x {300, 600, 900} CFM x
+  {35, 40} L/min = 13,122 cores. Oil: best 5.79 hp, none reach 7. Water: best 8.68 hp, 64 reach 7,
+  all at 900 CFM. The figure `src/assets/radiator-water-vs-oil.png` was drawn with matplotlib from
+  Anaconda (`~/anaconda3/python.exe`), in the existing navy and crimson. The old figure and its
+  2.9 hp plateau and 701 W/K air-side figure came from the pre-correction air-side area and are gone.
 
 `public/figures/aero-points-space.svg` was retitled in the same pass, from "Aero design space after
 the physics correction" to "Aero design space, total competition points", and its footnote no longer

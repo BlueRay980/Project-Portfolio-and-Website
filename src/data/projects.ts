@@ -3,7 +3,7 @@ import type { ImageMetadata } from 'astro';
 import ductHero from '../assets/duct-hero.jpg';
 import ductShroud from '../assets/duct-shroud-before-layup.jpg';
 import ductFinished from '../assets/duct-finished.jpg';
-import radiatorPlot from '../assets/radiator-heat-rejection.png';
+import radiatorPlot from '../assets/radiator-water-vs-oil.png';
 import evPlot from '../assets/ev-power-limit.png';
 import torqueMap from '../assets/engine-torque-map.png';
 import wheelLoads from '../assets/wheel-loads.png';
@@ -134,37 +134,45 @@ export const projects: Project[] = [
   {
     slug: 'ntu-radiator-sizing',
     num: 2,
-    title: 'NTU radiator sizing model and oil down-select',
+    title: 'NTU radiator sizing: why oil cannot meet 7 hp and water can',
     role: 'Cooling Senior Engineer',
     category: 'Cooling',
     headline:
-      'Heat rejection on this core is set by the oil side, not the air side. An oil-side Reynolds number of 42 puts the flow deep in the laminar regime, and the curve flattens at about 2.9 hp past 400 CFM.',
+      'None of 13,122 candidate cores reaches the 7 hp target with 10W-40 oil as the coolant, and the best manages 5.8 hp. With water, 64 of the same cores clear it, up to 8.7 hp.',
     thumb: radiatorPlot,
     thumbAlt:
-      'Two line charts. Left: heat rejection against fan air flow, where the laminar entry-length curve plateaus near 2.9 hp while the turbulent correlation rises past the 7 hp target. Right: heat rejection against core length at three fan flow rates, all below 4 hp.',
+      'Two charts comparing water and oil as radiator coolant. Left: heat rejection against fan air flow on the same 11-tube core, with oil levelling off below 2 hp under a 3.8 hp ceiling while water keeps rising. Right: a scatter of every core in the design space at 900 CFM, where the grey oil cloud tops out near 5.8 hp and the navy water cloud crosses the 7 hp target line.',
     repo: null,
     problem: [
-      'The oil cooler had to be sized against a 7 hp heat rejection target. Getting it wrong in either direction is expensive: too small and the oil runs hot through endurance, too large and the car carries mass and frontal area it does not need.',
+      'The cooling package had to reject 7 hp. The open question was which fluid to run through the core: engine oil, which would let one circuit do both jobs, or water. Choosing wrong in either direction is expensive. Too little capacity and the car runs hot through endurance, and too much core carries mass and frontal area the car does not need.',
     ],
     myRole: [
-      'I wrote the model, ran the sweeps, and made the fluid selection, as Cooling Senior Engineer. The validity check below is part of the model rather than an afterthought: it is the test the conductance numbers have to pass before any sizing conclusion is drawn from them.',
+      'I wrote the model, ran the sweeps, and made the fluid selection, as Cooling Senior Engineer. The comparison is set up so the fluid is the only thing that changes: same core, same 35 L/min pump flow, same 60 C inlet and 33 C air, same correlations.',
     ],
     approach: [
-      'I wrote an effectiveness-NTU model in MATLAB. It builds the core geometry from tube and fin dimensions, computes convection coefficients on both the air and oil sides, applies fin and overall surface efficiency, and returns heat rejected and outlet temperatures. It sweeps core dimensions, air flow, and coolant properties.',
-      'A second script runs the same core across a table of candidate oils, so the fluid choice is made against the same model rather than against a datasheet comparison.',
+      'I wrote an effectiveness-NTU model in MATLAB. It builds the core geometry from tube and fin dimensions, computes convection coefficients on both the air and liquid sides, applies fin and overall surface efficiency, and returns heat rejected and outlet temperatures. The liquid-side correlation is chosen by flow regime, so the laminar oil and the turbulent water are each evaluated with a form that is valid for them.',
+      'I ran it two ways. First on the 11-tube core as a sweep of fan flow, oil against water. Then across the whole design space: three levels on each of seven geometry factors (core length and depth, tube count, fin density, fin height, fin and tube thickness), at 300, 600 and 900 CFM and at 35 and 40 L/min. That is 13,122 cores, each run once with oil and once with water.',
+    ],
+    specs: [
+      { label: 'Requirement', value: '7 hp (5.2 kW) heat rejection' },
+      { label: 'Duty', value: 'Coolant in at 60 C, air in at 33 C, 35 to 40 L/min' },
+      { label: 'Reference core', value: '9.53 x 3.94 x 1.98 in, 11 tubes, 16 FPI' },
+      { label: 'Design space', value: '13,122 cores, 300 to 900 CFM' },
     ],
     code: [
       {
-        title: 'Air side: convection, fin efficiency, and overall surface efficiency',
+        title: 'Liquid side: the correlation follows the flow regime',
         lang: 'matlab',
         code: [
-          'Re_a = (velocity_a .* Thickness_Core) ./ v_a;',
-          'Nu_a = .664 * (Re_a .^ .5) * (Pr_a .^ (1/3));   % flat-plate laminar',
-          'h_a  = (Nu_a * k_a) / Thickness_Core;',
+          'Gz     = (Dh ./ Ltube) .* Re .* Pr;                         % inverse Graetz',
+          'Nu_lam = 3.66 + (0.0668 .* Gz) ./ (1 + 0.04 .* Gz.^(2/3));  % Hausen, laminar entry',
+          'f       = (0.79 .* log(Re) - 1.64).^-2;                     % Petukhov',
+          'Nu_turb = ((f./8) .* (Re - 1000) .* Pr) ./ ...',
+          '          (1 + 12.7 .* sqrt(f./8) .* (Pr.^(2/3) - 1));    % Gnielinski',
           '',
-          'm              = ((2 * h_a) ./ (k_aluminum .* Fin_Thickness)) .^ 0.5;',
-          'Efficiency_Fin = (tanh(m * Lc)) / (m * Lc);',
-          'Efficiency_Surface = 1 - (((N_fins*Area_Fin)/Area_Fin_Base) * (1-Efficiency_Fin));',
+          'Nu(Re < 2300)  = Nu_lam(Re < 2300);     % oil, Re 42',
+          'Nu(Re >= 3000) = Nu_turb(Re >= 3000);   % water, Re 4,250',
+          '% 2300 to 3000: linear blend, so the sweep has no artificial cliff',
         ].join('\n'),
       },
       {
@@ -172,40 +180,41 @@ export const projects: Project[] = [
         lang: 'matlab',
         code: [
           'UA  = 1 ./ ((1 ./ (Efficiency_Surface .* h_a .* Total_Air_Area)) ...',
-          '          + (1 ./ (h_o .* Total_Area_oil)));',
+          '          + (1 ./ (h_liq .* Total_Area_liq)));',
           'NTU = UA ./ C_min;',
           'E   = 1 - exp((1./Cr) .* (NTU.^0.22) .* (exp(-Cr.*(NTU.^0.78)) - 1));',
-          'q_actual = C_min * (T_o_in - T_a_in) .* E;',
+          'q_actual = C_min * (T_liq_in - T_a_in) .* E;',
         ].join('\n'),
       },
     ],
     figures: [
       {
         src: radiatorPlot,
-        alt: 'Two line charts. Left: heat rejection in horsepower against fan air flow in CFM for the 9.53 inch core, with the laminar entry-length curve flattening near 2.9 hp while the turbulent correlation curve rises straight past the 7 hp target line. Right: core length swept from 5 to 15 inches at 300, 500 and 700 CFM, reaching about 3.6 hp at the longest core.',
+        alt: 'Two charts. Left: heat rejection in horsepower against fan air flow from 0 to 900 CFM on the 11-tube core. The water curve rises to 3.5 hp at 900 CFM; the dashed oil curve flattens and reaches only 1.9 hp, under a dotted oil ceiling line at 3.8 hp, and both sit below the 7 hp target line. Right: heat rejection against core metal mass for every core in the design space at 900 CFM. The grey oil points never rise above about 5.8 hp; the navy water points extend above the 7 hp target line, up to 8.7 hp.',
         caption:
-          'Left: heat rejection against fan flow for the 9.53 in core, comparing a turbulent correlation against the laminar entry-length form valid at this Reynolds number. The gap between the two curves is what the validity check is worth. Right: core length swept from 5 to 15 in at three fan flow rates.',
+          'Left: the same 11-tube core with each fluid, against fan flow. Oil cannot pass 3.8 hp on this core at any air flow; water is held back only by the air side. Right: all 4,374 geometry and pump-flow combinations at 900 CFM, each run with both fluids. No oil core reaches the target line.',
       },
     ],
     callout: {
-      title: 'Why the oil side is the limit, and the check that proves it',
+      title: 'Why no oil core can reach 7 hp: the conductance bound',
       body: [
-        '10W-40 at 60 C is about 45 times more viscous than water, which puts the oil-side Reynolds number at 42 at the design condition. That is laminar by a wide margin, and far below the roughly 3,000 where the standard turbulent correlations hold, so the oil side is modelled with a laminar thermal entry-length form chosen for that regime.',
-        'It gives an oil-side conductance of 104 W/K against an air-side 701 W/K, and an overall UA of 90 W/K. The oil side carries seven times the thermal resistance of the air side, which is the whole design conclusion in one number.',
-        'Two conductances in series have to sum to a UA smaller than either one on its own. Every correlation in this model is held to that bound before its result is read, which is what makes an out-of-range correlation visible immediately instead of merely plausible.',
+        '10W-40 at 60 C is about 87 times more viscous than water. Through the same tubes at the same 35 L/min, that puts the oil at a Reynolds number of 42, deep in the laminar regime, and the water at 4,250, in turbulent flow. The liquid-side conductance comes out at 104 W/K for oil and 864 W/K for water, a factor of eight.',
+        'Heat transfer through a core can never exceed its overall conductance times the inlet temperature difference, and the overall conductance is always smaller than either side on its own. At a 27 C difference, 7 hp needs at least 193 W/K. The oil side of the 11-tube core supplies 104 W/K before the air side takes anything away, so no fan, fin density or air-side improvement can get it there. The ceiling is 3.8 hp.',
+        'A bigger core raises that ceiling, but the oil side stays about half of the total thermal resistance across the whole design space, against about a tenth for water. Even the largest core in the study, 15 by 11.9 by 2.5 in with 25 tubes, 22 FPI, 900 CFM and 40 L/min, rejects only 5.8 hp with oil. Oil is not a viable route to 7 hp within any core the car can package.',
       ],
     },
     result: [
-      'Heat rejection is limited by the oil side, not the air side. Past roughly 400 CFM the curve flattens at about 2.9 hp, so more fan does not solve the problem.',
-      'Core length alone does not close it either: at 15 in and 700 CFM the model returns 3.6 hp against the 7 hp target.',
-      'The useful levers are the ones that attack the oil-side resistance: more tubes in parallel to raise wetted area, turbulators to break up the laminar boundary layer, or a higher oil flow rate.',
+      'Oil is ruled out. Of 13,122 cores, none reaches 7 hp with oil. The best is 5.8 hp, 17% short, on the largest and heaviest core in the study, 5.7 kg of metal.',
+      'Water meets the requirement. 64 cores clear 7 hp with water, up to 8.7 hp. The lightest of them is 1.7 kg of metal: 15 by 8.2 by 2.5 in, 17 tubes, 22 FPI, at 900 CFM and 40 L/min.',
+      'The two fluids fail for different reasons, which is what makes the choice clear. With oil the limit is the liquid side, and no amount of air flow moves it. With water the liquid side is about a tenth of the resistance, so the limit is the air side, and that is solved by fin density, core depth and fan flow. Water is the coolant, and the remaining sizing work is on the air side.',
     ],
     limitations: [
-      'The air side uses a flat-plate laminar correlation on a finned core, so it understates the true coefficient. That is conservative for sizing, but it is the next thing I would replace.',
+      'Every water core that clears 7 hp needs 900 CFM, the top of the swept range. Air flow is an input here, not solved against a fan curve, so the fan has to be selected and the duct pressure drop checked before any of these cores is final.',
+      'Both fluids are compared at the same 60 C inlet so that the fluid is the only variable. Oil properties are held at 60 C rather than varied with temperature.',
+      'The air side uses a flat-plate laminar correlation on a finned core, so it understates the true coefficient. That is conservative for sizing, and it is conservative for water in particular, because water is the fluid that is air-side limited.',
       'The model is a steady-state sizing tool. It assumes a single design condition and does not cover warm-up, heat soak after a run, or transient load through an endurance stint.',
-      'Delivered air flow is an input, not a measurement. The duct it depends on was never instrumented, so the CFM figures come from the fan curve rather than from the installed part.',
     ],
-    tools: ['MATLAB', 'Effectiveness-NTU method', 'Excel'],
+    tools: ['MATLAB', 'Effectiveness-NTU method', 'Design of experiments', 'Excel'],
   },
 
   {
