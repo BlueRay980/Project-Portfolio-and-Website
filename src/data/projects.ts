@@ -11,6 +11,8 @@ import wingSection from '../assets/wing-cross-section.png';
 import wingBuckling from '../assets/wing-buckling-vs-yield.png';
 import wingStress from '../assets/wing-fea-stress.png';
 import wingDeflection from '../assets/wing-fea-deflection.png';
+import simsuiteLapOverview from '../assets/simsuite-lap-overview.png';
+import simsuiteSweep from '../assets/simsuite-sweep-surface.png';
 
 export type Role = 'Cooling Senior Engineer' | 'Systems Engineering Lead' | 'AEM 341 course project';
 export type Category = 'Cooling' | 'Systems Engineering' | 'Aerospace Structures';
@@ -696,6 +698,80 @@ export const projects: Project[] = [
       { label: 'Full structural analysis report', href: '/files/aem341-wing-structural-analysis.pdf', note: 'PDF, 8 pages' },
       { label: 'Project presentation', href: '/files/aem341-wing-presentation.pdf', note: 'PDF, 13 slides' },
     ],
+  },
+
+  {
+    slug: 'sim-suite-reforged',
+    num: 10,
+    title: 'Sim Suite Reforged: the team lap simulation as a desktop app',
+    role: 'Systems Engineering Lead',
+    category: 'Systems Engineering',
+    headline:
+      'The team MATLAB lap simulations rebuilt as a Windows app any member can install, with no MATLAB. Every model is held to frozen MATLAB runs: quasi-steady lap times match within 1e-13 s, and a 14 DOF lap runs in about 1 s against 34 s in MATLAB.',
+    thumb: simsuiteLapOverview,
+    thumbAlt:
+      'The Sim Suite Reforged main window in a MoTeC i2 style layout: a run list on the left, stacked speed, throttle, brake and gear traces against distance in the middle, a track map on the right, and a channel list down the right edge.',
+    repo: null,
+    problem: [
+      'The lap simulations in projects 3, 4, 5 and 8 were MATLAB scripts. Running one meant a MATLAB licence, the right folder layout, and knowing which variables to edit at the top of which script, so in practice the simulation answered questions only for the few people who wrote it. Everyone else on the team asked them.',
+      'The scripts had also drifted apart. Three separate quasi-steady solvers had grown up in three scripts, each with its own lap solver, and on the same car they returned different autocross times. A design question could get a different answer depending on which script somebody happened to open.',
+    ],
+    myRole: [
+      'As Systems Engineering Lead I own the app: its architecture, the port from MATLAB to Python, the test suite that holds the port to the original models, the installer, and the releases members run. Members file bug reports from inside the app, and those land in a team folder I work through.',
+    ],
+    approach: [
+      'The first step was to choose one quasi-steady solver as the baseline and wrap it, and the 14 DOF model, as pure functions behind a common adapter: describe its settings, validate them, run, and return one common run object. Everything else in the app, the editors, the plots, the exports and the sweeps, talks to that adapter rather than to a model, which is what lets a new model drop in without touching the window.',
+      'Before any model was ported, its MATLAB output was frozen. Capture scripts run the original MATLAB code and save lap times, every channel, the solver intermediates, the vehicle builds and the random-number streams as golden fixtures. A Python piece replaces a MATLAB piece only once it matches those fixtures, so the port is judged against the models the team already trusted rather than against itself.',
+      'The Python side is numpy, scipy and openpyxl for the models, numba to compile the 14 DOF time loop, and PySide6 with pyqtgraph for a window laid out like MoTeC i2, the tool the team already reads logged data in. A run can be overlaid on another, a variance channel shows where time is gained or lost, and a run exports to MoTeC .ld files that open in i2 beside a logged lap.',
+      'On top of single laps the app runs designed studies: full factorial grids, Latin hypercubes, central composite and one-at-a-time designs over any vehicle field or run setting, scored either as a lap or as all four dynamic events converted to competition points. Points run in parallel worker processes, a stopped sweep keeps every finished point and resumes, and the same studies are reachable from a local HTTP API so scripts can drive them.',
+      'Every release is built and checked by one script: it runs the full test suite, freezes the app with PyInstaller, checks the frozen copy against the MATLAB laps again, then installs, upgrades and uninstalls it silently and checks it once more. A release cannot ship with a red test.',
+    ],
+    specs: [
+      { label: 'Models', value: 'Quasi-steady point mass (combustion and electric), 14 DOF transient with an MF6.1 tyre, accel and skidpad events' },
+      { label: 'Studies', value: 'Grid, Latin hypercube, central composite, one at a time; lap or competition points; parallel and resumable' },
+      { label: 'Tools in the app', value: 'Vehicle builder, track builder from a logged lap, grip auto-tune, math channels, driver presets' },
+      { label: 'Exports', value: 'CSV, Excel, text report, MoTeC i2 .ld and .ldx' },
+      { label: 'Code', value: 'About 26,000 lines of Python, 394 tests held to frozen MATLAB runs' },
+      { label: 'Delivery', value: '90 MB per-user Windows installer; no MATLAB, MATLAB Runtime or Python needed' },
+      { label: 'Version', value: '1.5.2' },
+    ],
+    figures: [
+      {
+        src: simsuiteLapOverview,
+        alt: 'The Lap Overview tab with two Michigan Autox 2026 runs of CR26I overlaid. Stacked traces against distance show the variance between the runs, speed, throttle, brake pressure and gear, with a track map coloured by speed on the right and a cursor values table along the bottom.',
+        caption:
+          'Lap Overview, two runs of the same car overlaid. The top trace is the variance channel, the time one run gains on the other along the lap, and the table below reads every plotted channel at the shared cursor. The layout follows MoTeC i2 on purpose, so a simulated lap reads the way a logged one does.',
+      },
+      {
+        src: simsuiteSweep,
+        alt: 'The Sweeps tab. On the left, a full factorial design over total mass and downforce coefficient, with the parallel worker count and a time estimate. On the right, a response surface of lap time over mass and downforce coefficient, from 44.22 s at low mass and high downforce to 45.52 s at high mass and low downforce, above a sortable results table.',
+        caption:
+          'A designed sweep over mass and downforce coefficient on Michigan Autox 2026, with the response surface and the sortable results table. Any point opens as an ordinary run, so a surprising cell can be inspected channel by channel rather than taken on trust.',
+      },
+    ],
+    callout: {
+      title: 'The port is judged against the models the team already trusted, not against itself',
+      body: [
+        'A rewrite that is only tested against its own output can drift from the original and still pass. So every model was frozen in MATLAB first, and the Python version had to reproduce it before it replaced anything.',
+        'The quasi-steady lap matches MATLAB within 1e-13 s and every channel within 1e-7. All six 14 DOF cases, from log replay to the measured MF6.1 tyre, take the same step count and the same lap time, with every channel within 1e-12. The electric car matches its state of charge bit for bit at all 24,992 points of a 22-lap endurance run. The CSV, text and MoTeC exports are byte-identical to the MATLAB app for the same run, and the .ld files were opened and plotted in MoTeC i2 Pro itself.',
+        'Even the random parts are pinned. The Latin hypercube design matches MATLAB point for point, because numpy and MATLAB share the same Mersenne Twister with the same default seed. That is what lets a sweep run in the app be compared directly with one run in MATLAB a year earlier.',
+      ],
+    },
+    result: [
+      'Members install the app from one per-user setup file, with no administrator rights and no MATLAB, and the app has gone through six versions since the launch version members first received.',
+      'Speed changed what the models are used for. A 14 DOF lap integrates in about 1 s against 34 s in MATLAB, a quasi-steady autocross lap solves in under half a second, and sweep workers start in about 2 s rather than the 20 a MATLAB Runtime worker took. A competition-points sweep scores all four dynamic events at about 2 s a point, which makes a design study a lunch-break job rather than an overnight one.',
+      'The quasi-steady model is calibrated to the measured CR26I times from Michigan 2026, so other cars in a design study get the same per-event correction the real car needed.',
+      'The grip auto-tune turned up a model finding rather than a number. Tuned against a logged endurance lap, the quasi-steady model is about 1.2 m/s too fast at the corner minima and 1 to 1.7 m/s too slow on the straights at any grip, so grip cannot fix both, and the error is in the straight-line model: power, drag or gearing. The tuner now reports that as a warning instead of returning a grip value that quietly absorbs it.',
+      'Scripts and chat tools can run laps and sweeps through a local HTTP API. It answers this computer only: it listens on the loopback address, refuses requests that name another host so a web page cannot reach it through DNS rebinding, and accepts only JSON bodies.',
+    ],
+    limitations: [
+      'Matching MATLAB proves the port is faithful, not that the physics is right. Every limitation of the underlying models, listed on projects 3, 4 and 8, carries over unchanged.',
+      'The quasi-steady calibration is one flat time factor per event. The autocross factor is 6.1%, and a flat factor assumes the model error stays the same as the car changes, which is unlikely where the error comes from grip or transient behaviour. Tuning grip against a logged lap would carry over better.',
+      'The 14 DOF model and competition scoring run combustion cars only. The electric car workbook has no suspension sheet, and scoring drives an engine map.',
+      'The plan gate of three members outside vehicle dynamics installing and running a lap unaided has not been run, so ease of use is my judgement rather than a measurement.',
+      'The installer is not code-signed, so Windows SmartScreen warns on the first run. Engine heat, tyre temperature and wheel speed models are waiting on logged data.',
+    ],
+    tools: ['Python (numpy, scipy, numba, openpyxl)', 'PySide6 and pyqtgraph', 'MATLAB', 'PyInstaller and Inno Setup', 'MoTeC i2', 'Git'],
   },
 
 ];

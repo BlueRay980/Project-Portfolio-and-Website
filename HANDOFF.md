@@ -28,6 +28,7 @@ Written 2026-10-05, last updated 2026-10-06. This tracks the gap between the pla
 | 7 | Team tooling | Published 2026-10-05. |
 | 8 | Torque maps, suspension, and the 14 DOF model in the lap simulation | Published. Added 2026-10-05, not on the original roster. |
 | 9 | Multi-cell aluminum wing structure (NACA 2412) | Published 2026-11-25, not on the original roster. AEM 341 course project, filed under a new Aerospace Structures category. Written from the structural analysis report and the presentation, both published as PDFs under `public/files/` and linked from a Documents section on the page. |
+| 10 | Sim Suite Reforged | Published 2026-11-25, not on the original roster. Written from the app's README, its changelog and the 1.5.2 source in `MATLAB Drive\LAPSIM\SimSuite`. Both figures are the app's own Windows 11 light-mode test screenshots (`tests/artifacts/py_win11_light_*.png`). Leaves out the 514 / CR27I scoring targets the app still displays, for the reason under project 3, and the source stays private, so `repo` is null. |
 
 Numbering follows the plan roster. **The whole roster is written as of 2026-10-05, so there are no
 drafts left.** The `draft: true` flag and the filter behind it stay in `src/data/projects.ts`, because
