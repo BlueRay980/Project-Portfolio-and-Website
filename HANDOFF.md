@@ -139,8 +139,13 @@ itself, not patched in the PDF. Backups sit beside it stamped `_backup_20261005_
 **Replaced 2026-11-26** with `Downloads\Matthew_Jordan_Resume_11_26_26.pdf`, supplied as a finished PDF
 (no Word source here). The About page was synced to it: cumulative GPA 3.45, coursework, the APSU
 Governor's School, U.S. citizenship and the Summer 2027 internship search, the UAV hours and clients,
-and the Simulation row in the tools table. Its Cooling bullet still quotes the ~2.9 hp oil figure,
-which the radiator page no longer uses; see the note on page 2 under Editorial line.
+and the Simulation row in the tools table.
+
+The same day its Cooling bullet was rewritten to match page 2 (13,122 cores, oil best 5.8 hp, 64 water
+cores past 7 hp). That PDF had been printed from a web page whose source is not on this machine, so it
+was rebuilt as `OneDrive\Desktop\Resume\Matthew_Jordan_Resume.html` (same Carlito/Calibri sizes,
+colours and section positions to within 3 px) and printed with headless Chrome to
+`Matthew_Jordan_Resume_11_26_26.pdf` beside it. Edit the HTML and print again for future changes.
 
 ## Editorial line, set 2026-10-06
 
