@@ -3,7 +3,7 @@ import { getImage } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import { site } from '../data/site';
-import { featured } from '../data/projects';
+import { featured, published } from '../data/projects';
 import { url } from '../lib/url';
 import heroSrc from '../assets/cr26i-campus.jpg';
 
@@ -54,7 +54,7 @@ const heroNarrow = await getImage({ src: heroSrc, format: 'webp', width: 900, qu
         {featured.map((project) => <ProjectCard project={project} />)}
       </ul>
       <p style="margin-top:1.5rem">
-        <a href={url('/projects')}>All eight projects</a>
+        <a href={url('/projects')}>All {published.length} projects</a>
       </p>
     </div>
   </section>

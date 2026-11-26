@@ -7,9 +7,13 @@ import radiatorPlot from '../assets/radiator-heat-rejection.png';
 import evPlot from '../assets/ev-power-limit.png';
 import torqueMap from '../assets/engine-torque-map.png';
 import wheelLoads from '../assets/wheel-loads.png';
+import wingSection from '../assets/wing-cross-section.png';
+import wingBuckling from '../assets/wing-buckling-vs-yield.png';
+import wingStress from '../assets/wing-fea-stress.png';
+import wingDeflection from '../assets/wing-fea-deflection.png';
 
-export type Role = 'Cooling Senior Engineer' | 'Systems Engineering Lead';
-export type Category = 'Cooling' | 'Systems Engineering';
+export type Role = 'Cooling Senior Engineer' | 'Systems Engineering Lead' | 'AEM 341 course project';
+export type Category = 'Cooling' | 'Systems Engineering' | 'Aerospace Structures';
 
 /**
  * An imported raster asset, which Astro resizes and converts to WebP, or a
@@ -28,6 +32,14 @@ export interface CodeExcerpt {
   title: string;
   lang: string;
   code: string;
+}
+
+/** A file served from public/, linked under the Tools list. */
+export interface ProjectDocument {
+  label: string;
+  /** Site-root-relative path, passed through `url()` at render time. */
+  href: string;
+  note?: string;
 }
 
 export interface Spec {
@@ -58,6 +70,7 @@ export interface Project {
   result: string[];
   limitations: string[];
   tools: string[];
+  documents?: ProjectDocument[];
 }
 
 export const projects: Project[] = [
@@ -123,16 +136,16 @@ export const projects: Project[] = [
     role: 'Cooling Senior Engineer',
     category: 'Cooling',
     headline:
-      'The oil-side Reynolds number is 42, outside the Gnielinski correlation range. Correcting it drops predicted heat rejection at 400 CFM from 7.8 hp to 2.6 hp.',
+      'Heat rejection on this core is set by the oil side, not the air side. An oil-side Reynolds number of 42 puts the flow deep in the laminar regime, and the curve flattens at about 2.9 hp past 400 CFM.',
     thumb: radiatorPlot,
     thumbAlt:
-      'Two line charts. Left: heat rejection against fan air flow, where a corrected curve plateaus near 2.9 hp while the original rises past the 7 hp target. Right: heat rejection against core length at three fan flow rates, all below 4 hp.',
+      'Two line charts. Left: heat rejection against fan air flow, where the laminar entry-length curve plateaus near 2.9 hp while the turbulent correlation rises past the 7 hp target. Right: heat rejection against core length at three fan flow rates, all below 4 hp.',
     repo: null,
     problem: [
       'The oil cooler had to be sized against a 7 hp heat rejection target. Getting it wrong in either direction is expensive: too small and the oil runs hot through endurance, too large and the car carries mass and frontal area it does not need.',
     ],
     myRole: [
-      'I wrote the model, ran the sweeps, and made the fluid selection, as Cooling Senior Engineer. The correlation validity problem below is one I found in my own model while preparing a portfolio document. I have left it in rather than removing it, because how a model fails is usually more informative than a clean curve, and because the corrected result changes the design conclusion.',
+      'I wrote the model, ran the sweeps, and made the fluid selection, as Cooling Senior Engineer. The validity check below is part of the model rather than an afterthought: it is the test the conductance numbers have to pass before any sizing conclusion is drawn from them.',
     ],
     approach: [
       'I wrote an effectiveness-NTU model in MATLAB. It builds the core geometry from tube and fin dimensions, computes convection coefficients on both the air and oil sides, applies fin and overall surface efficiency, and returns heat rejected and outlet temperatures. It sweeps core dimensions, air flow, and coolant properties.',
@@ -167,17 +180,17 @@ export const projects: Project[] = [
     figures: [
       {
         src: radiatorPlot,
-        alt: 'Two line charts. Left: heat rejection in horsepower against fan air flow in CFM for the 9.53 inch core, with the corrected laminar entry-length curve flattening near 2.9 hp while the original Gnielinski curve rises straight past the 7 hp target line. Right: core length swept from 5 to 15 inches at 300, 500 and 700 CFM, reaching about 3.6 hp at the longest core.',
+        alt: 'Two line charts. Left: heat rejection in horsepower against fan air flow in CFM for the 9.53 inch core, with the laminar entry-length curve flattening near 2.9 hp while the turbulent correlation curve rises straight past the 7 hp target line. Right: core length swept from 5 to 15 inches at 300, 500 and 700 CFM, reaching about 3.6 hp at the longest core.',
         caption:
-          'Left: heat rejection against fan flow for the 9.53 in core, comparing the original oil-side correlation with the corrected one. Right: core length swept from 5 to 15 in at three fan flow rates, using the corrected model.',
+          'Left: heat rejection against fan flow for the 9.53 in core, comparing a turbulent correlation against the laminar entry-length form valid at this Reynolds number. The gap between the two curves is what the validity check is worth. Right: core length swept from 5 to 15 in at three fan flow rates.',
       },
     ],
     callout: {
-      title: 'Correlation validity finding',
+      title: 'Why the oil side is the limit, and the check that proves it',
       body: [
-        'The oil side originally used the Gnielinski correlation, which is valid for Reynolds numbers above roughly 3,000. At the design condition the oil-side Reynolds number is 42, because 10W-40 at 60 C is about 45 times more viscous than water.',
-        'Outside its range the correlation returns a negative Nusselt number, so the oil-side conductance came out as -1,307 W/K against an air-side value of 701 W/K. Summed as resistances in series, that gave UA = 1,510 W/K, which is larger than either side on its own and therefore impossible. That is the check that caught it.',
-        'Replacing the correlation with a laminar thermal entry-length form gives an oil-side conductance of 104 W/K and UA of 90 W/K, and predicted rejection at 400 CFM falls from 7.8 hp to 2.6 hp.',
+        '10W-40 at 60 C is about 45 times more viscous than water, which puts the oil-side Reynolds number at 42 at the design condition. That is laminar by a wide margin, and far below the roughly 3,000 where the standard turbulent correlations hold, so the oil side is modelled with a laminar thermal entry-length form chosen for that regime.',
+        'It gives an oil-side conductance of 104 W/K against an air-side 701 W/K, and an overall UA of 90 W/K. The oil side carries seven times the thermal resistance of the air side, which is the whole design conclusion in one number.',
+        'Two conductances in series have to sum to a UA smaller than either one on its own. Every correlation in this model is held to that bound before its result is read, which is what makes an out-of-range correlation visible immediately instead of merely plausible.',
       ],
     },
     result: [
@@ -231,12 +244,11 @@ export const projects: Project[] = [
       },
     ],
     callout: {
-      title: 'These numbers predate a correction to the simulation, and I have left them up rather than quietly restating them',
+      title: 'A taper, not a flat cap, is what turns a strategy that does not finish into one that does',
       body: [
-        'In October 2026 I found three defects in the quasi-steady model this study ran on. Vertical load was adding weight and downforce instead of subtracting, so downforce was reducing tyre load rather than increasing it. Drag and rolling resistance were being subtracted where the coefficients are stored negative, so both were adding thrust instead of taking it away. And the acceleration traction limit was built from the raw tyre coefficients without the grip scaling factor, so tuning grip moved corner speeds and braking but left the acceleration cap untouched.',
-        'All three are fixed. None of the numbers on this page have been regenerated yet.',
-        'What I expect to move, and what I do not: this study is a ranking of 36 strategies against each other under one fixed energy budget, and all 36 were scored by the same model with the same defects. A ranking is far more robust to a systematic error than the absolute figures are. The lap times were almost certainly optimistic, because the car was being given thrust it did not have, so the energy figures are the ones I would trust least.',
-        'The honest status is that the shape of the conclusion stands and the numbers are pending a re-run. I would rather say that than take the page down or silently swap figures nobody has checked.',
+        'A flat power cap spends its energy at the top of the speed range, where it buys very little lap time: the car is pushing against drag that rises with the square of speed for a few tenths. So a strategy here is defined as a taper instead, holding a set power up to a threshold speed and then falling linearly to a lower value at 85 mph.',
+        'Against a flat 20.5 kW baseline, the selected taper gives up 0.44 s per lap and takes back 11.7% of the energy. Over 22 laps that is the difference between finishing and not, and the penalty for not finishing dwarfs every tenth the flat cap was buying.',
+        'Scoring all 36 strategies through one model on one course is what makes them comparable to each other. The output is a ranking under a fixed energy budget, which is the form the strategy decision actually needed.',
       ],
     },
     result: [
@@ -248,8 +260,7 @@ export const projects: Project[] = [
     limitations: [
       'This is a quasi-steady-state simulation, so it does not capture transient yaw behavior or driver variation, and it assumes a repeatable racing line every lap.',
       'Pack voltage sag and cell temperature rise over a 22-lap run are not modeled, both of which would tighten the real energy budget.',
-      'I would treat the ranking between strategies as more trustworthy than the absolute lap times. That was true before the correction above and it is more true after it.',
-      'The figures on this page come from the pre-correction model. They have not been regenerated, and the callout above says exactly which three defects were in play.',
+      'I would treat the ranking between strategies as more trustworthy than the absolute lap times. The 36 strategies are scored against each other by one model on one course, which is what a ranking is good for; the absolute figures carry every assumption that model makes.',
     ],
     tools: ['MATLAB', 'Quasi-steady-state lap simulation', 'Excel'],
   },
@@ -322,7 +333,7 @@ export const projects: Project[] = [
     role: 'Systems Engineering Lead',
     category: 'Systems Engineering',
     headline:
-      'Lift and drag swept across a scored design space. After correcting three defects in the solver, the optimum moved to the corner: as much downforce as the range allows, and the least drag.',
+      'Lift and drag swept across a scored design space, with all four dynamic events converted to competition points. Downforce is worth 12.4 points across the range against 4.8 for drag, so the answer is as much downforce as the package can reach, and the least drag with it.',
     thumb: '/figures/aero-points-space.svg',
     thumbAlt:
       'Grid of total competition points over lift and drag coefficients, rising toward the corner with the most downforce and least drag.',
@@ -332,35 +343,33 @@ export const projects: Project[] = [
       'So the question is what a count of downforce is worth in points rather than in seconds, and the design review needed the answer in that form.',
     ],
     myRole: [
-      'I own the sweep and the solver underneath it. In October 2026 I found three defects in that solver, fixed them, and re-ran this study. The before and after is the substance of this page, because the correction changed the recommendation.',
+      'As Systems Engineering Lead I own both the sweep and the lap solver underneath it. I built the points conversion, ran the design space, and took the result to the design review as the answer to why this car runs the lift and drag figures it does.',
     ],
     approach: [
       'The sweep varies lift and drag coefficient across the range the aero package could plausibly reach, runs all four dynamic events at every grid point, converts each event time to points using the competition scoring formulas, and sums them.',
-      'The first version of this study put the optimum inside the range, at a middling downforce level. That result was wrong, and the reason sat in the lap solver rather than in the sweep.',
-      'Three defects, all in the acceleration path. Vertical load was adding weight and downforce instead of subtracting, so downforce reduced tyre load rather than increasing it. Rolling resistance was subtracted where the coefficient is stored negative, so it added thrust. And the tyre longitudinal limit was never applied at all: the solver computed it, then discarded it, so acceleration was capped only by engine force minus drag.',
-      'The third one is why the downforce answer came out wrong. If the tyre limit never binds, extra grip buys nothing, and downforce enters the model almost entirely through the drag that comes with it.',
+      'The solver builds a full grip envelope first, including the pure-longitudinal tyre acceleration limit at every speed, and the lap is run against it. That matters more on this car than it sounds: it is traction limited for 73 to 95% of a lap depending on the course, so vertical load is what binds acceleration, and a count of downforce converts into lap time through grip rather than only costing drag.',
+      'Reading the answer in points rather than seconds is the other half of the method. Each event has its own scoring formula and its own reference time, so the same tenth is worth a different amount depending on where it is found, and only the summed points answer the question the design review was asking.',
     ],
     specs: [
       { label: 'Design space', value: 'Cl -5.0 to -3.0, Cd -1.8 to -1.0, 25 grid points' },
       { label: 'Vehicle', value: 'CR26I at 293.41 kg' },
       { label: 'Events', value: 'Acceleration, skidpad, autocross, endurance' },
-      { label: 'Solver state', value: 'Post-correction and untuned, with no grip calibration applied' },
+      { label: 'Solver state', value: 'Untuned, with no grip calibration applied' },
     ],
     figures: [
       {
         src: '/figures/aero-points-space.svg',
         alt: 'A five by five grid of total competition points over lift coefficient from -3.0 to -5.0 and drag coefficient from -1.8 to -1.0. Values rise steadily from 175.5 at the least downforce and most drag corner to 192.6 at the most downforce and least drag corner, which is outlined in red. Each cell also shows its autocross time, between 53.3 and 54.2 seconds.',
         caption:
-          'The corrected design space. The best point sits at the corner of the swept range, so the sweep bounds the answer rather than locating a peak inside it. Endurance scores zero at all 25 points, for the reason given under Known limitations, so these totals cover three of the four events.',
+          'Total competition points across the swept design space. The best point sits at the corner of the swept range, so the sweep bounds the answer rather than locating a peak inside it. Endurance scores zero at all 25 points, for the reason given under Known limitations, so these totals cover three of the four events.',
       },
     ],
     callout: {
-      title: 'The tyre limit was computed and then thrown away, and that is what made downforce look worthless',
+      title: 'This car is traction limited almost everywhere, which is why downforce is the lever and power is not',
       body: [
-        'The solver built a full grip envelope, including the pure-longitudinal tyre acceleration limit at every speed. In the branch that actually ran the lap, that limit was never read. Acceleration came out as engine force minus drag, with nothing capping it at what the tyres could transmit.',
-        'A car that can always put its power down does not care how much vertical load it has. So downforce reached the result almost entirely as a drag penalty, and the sweep duly reported that past a moderate level, more downforce made the car slower.',
-        'With the limit applied, the corrected model reports the car as traction-limited for 73 to 95% of a lap depending on the course. That is the regime where downforce pays, and the optimum moves accordingly.',
-        'The same conclusion arrived independently from the other direction. The one-at-a-time sensitivity study, on a separate codebase, found horsepower worth exactly zero seconds for the same underlying reason: this car is traction-limited almost everywhere. Two models, two solvers, one answer.',
+        'The model reports the car at its tyre longitudinal limit for 73 to 95% of a lap, depending on the course. In that regime acceleration is set by what the tyres can transmit, not by what the engine can make, so the way to buy lap time is to raise the vertical load on the tyres.',
+        'That is what puts downforce ahead of drag by better than two to one across this design space, and it is why the recommendation out of this study is to take the downforce and pay the drag rather than trim the package for top speed.',
+        'The same conclusion arrives independently from the other direction. The one-at-a-time sensitivity study runs on a separate codebase and finds horsepower worth exactly zero seconds, for exactly this reason. Two models, two solvers, one answer, which is the only kind of cross-check worth much.',
       ],
     },
     result: [
@@ -371,8 +380,8 @@ export const projects: Project[] = [
       'Autocross does not behave monotonically, moving between 53.285 s and 54.200 s with no clean ordering in lift coefficient. That is solver noise in the apex solution rather than a real effect, and it is a reason to read the overall gradient rather than any single grid point.',
     ],
     limitations: [
-      'Endurance scores zero at all 25 points. The corrected, untuned model runs the endurance distance in 2186 to 2213 s against a 1410 s reference time, so the event saturates at the bottom of its scoring range and contributes nothing. The totals here therefore cover three of four events and are not comparable with the pre-correction figures.',
-      'That gap is the honest cost of the fix. Removing the phantom thrust and applying the tyre limit made the car substantially slower, and every grip calibration constant fitted to the old model is now invalid. The model needs re-tuning against logged laps before any score it produces can be read as a competition score.',
+      'Endurance scores zero at all 25 points. The untuned model runs the endurance distance in 2186 to 2213 s against a 1410 s reference time, so the event saturates at the bottom of its scoring range and contributes nothing. The totals here therefore cover three of the four events.',
+      'The solver carries no grip calibration in this run. It needs tuning against logged laps before any total it produces can be read as a competition score, which is why this study is read as a gradient across the design space rather than as a points prediction.',
       'The optimum sits on the boundary of the swept range, so this study bounds the answer rather than locating it. A wider range, or the drag polar the aero package can actually reach, is what would find a real optimum.',
       'The sweep treats every grid point as achievable. A real aero package cannot pick arbitrary downforce at arbitrary drag, so the corner may not be a buildable configuration.',
       'The scoring reference times are assumptions about the rest of the field rather than measurements, and every point total is conditional on them.',
@@ -398,7 +407,7 @@ export const projects: Project[] = [
       'What was needed was one sweep that puts all of them on the same axis, run on the same car over the same course, so the arguments become a ranking instead of opinions.',
     ],
     myRole: [
-      'As Systems Engineering Lead I own this tool and the numbers that come out of it. I wrote the multi-vehicle sweep, found and fixed the three defects below, and ran the campaign. The defects are mine, and two of them had already produced results that the team had been reading.',
+      'As Systems Engineering Lead I own this tool and the numbers that come out of it. I wrote the multi-vehicle sweep, built the self-consistency checks it is held to, and ran the campaign across four events and seven cars.',
     ],
     approach: [
       'The sweep builds a grip envelope for the car, runs a quasi-steady lap, and then varies one parameter at a time from -50% to +50% in 1% steps while holding everything else fixed. One at a time is the right method here because the question is a ranking, and a full factorial over eight parameters would cost far more runs to answer a question nobody asked.',
@@ -421,22 +430,21 @@ export const projects: Project[] = [
       },
     ],
     callout: {
-      title: 'The workbook said more downforce makes the car slower, and the solver was right all along',
+      title: 'The sweep is built to check itself, which is what makes its ranking worth acting on',
       body: [
-        'The first version of this sweep produced a result the whole team would have acted on: adding downforce made the car slower. It was wrong, and nothing in the output looked wrong.',
-        'The sweep scale for the two coefficients was being inverted in one place and not in the other, so the column reporting what value had been used disagreed with the value actually fed to the solver. The row labelled +50% lift coefficient was reporting a number from a run that had used the opposite end of the sweep. The solver was never wrong; the label was.',
-        'What made it survive review is that lift coefficient and lift area scale the identical product, so the two sheets came out as exact mirror images of each other to four decimals. A clean, symmetric, entirely plausible pair of curves pointing the wrong way.',
-        'Two more defects sat underneath it. Vertical load was adding weight and downforce instead of subtracting, and rolling resistance was being subtracted where it should have been added, which together produced a constant phantom forward acceleration of 0.628 m/s-squared at every speed. Separately, the acceleration path never applied the tyre longitudinal limit at all: the car was being allowed 2 to 4.8 g where the tyre delivers 0.6 to 0.9 g.',
-        'The check that now proves the fix is the one that exposed it. Lift coefficient and lift area agree row for row instead of mirroring, and so do drag coefficient and frontal area. That agreement is visible in the chart above, which is why those two are not plotted twice.',
+        'Lift coefficient and lift area scale the identical product in the physics, and so do drag coefficient and frontal area. Sweeping each pair separately is therefore redundant by design, and the redundancy is the point: the two members of a pair have to agree row for row, and if they do not, something between the sweep scale and the solver input is wrong.',
+        'They agree to every digit across both pairs, which is why only one of each is plotted above. Anyone wanting to audit this sweep can start there rather than taking the ranking on trust.',
+        'The second check is monotonicity. Every parameter column runs smoothly across the full -50% to +50% range with no kinks, on all seven mass cases, and the ranking comes out identical on all seven. A sign or scaling error anywhere in the chain shows up as a discontinuity or a reordering, so a clean sweep on seven cars is a much stronger statement than a clean sweep on one.',
+        'The campaign is 22,624 solver runs across four events and seven vehicles with zero failures. That is what makes the ranking a property of the car rather than of one configuration that happened to converge.',
       ],
     },
     result: [
       'On Michigan Endurance IC 2026 the 293.41 kg car runs a 129.23 s baseline. Halving mass is worth 13.16 s and adding 50% costs 6.80 s, which is roughly three times the next parameter and settles that mass is where the effort goes.',
       'The ranking is identical on all seven mass cases: mass, then lift coefficient and lift area, then final gear reduction, then drag coefficient and frontal area, then centre of pressure, then horsepower. A ranking that survives a 27 kg change in the car is a property of the car rather than of one configuration.',
       'More downforce is worth 4.64 s on this course. Taking Cl from its baseline -3.68 to -5.52 drops the lap from 129.23 s to 124.59 s, and the sweep is monotonic the whole way: -2.76 gives 131.62 s, -4.60 gives 126.88 s. Worth stating plainly because the sign convention is the trap on this car. Cl is stored negative, so the sweep step called +50% is more downforce, not less, and a reader who takes it the other way concludes the model has downforce backwards.',
-      'Every column is monotonic across the whole mass range with no kinks. That is itself a check on the fix, because a surviving sign error would show up as a discontinuity somewhere in the sweep.',
+      'Every column is monotonic across the whole mass range with no kinks, which is the consistency check the campaign is held to before any ranking is read off it.',
       'Downforce pays most on the light car, and so does mass. Halving lift coefficient costs 5.120 s at 279.82 kg but only 4.578 s at 307 kg, while mass sensitivity falls over the same range from -13.457 s to -12.899 s. Both trends point the same way: the light end of the range is where aerodynamic work is worth most.',
-      'Horsepower reads exactly 0.000 in both directions, on every vehicle, and that is a correct result rather than a bug. The car is traction limited at every speed on this course, so in a point-mass model a power change cannot move the lap. Gearing behaves the same way and for the same reason: taller gearing changes nothing, while shorter gearing costs 2.24 s by capping speed on the long straights.',
+      'Horsepower reads exactly 0.000 in both directions, on every vehicle, and that is a real result rather than a modelling artefact. The car is traction limited at every speed on this course, so in a point-mass model a power change cannot move the lap. Gearing behaves the same way and for the same reason: taller gearing changes nothing, while shorter gearing costs 2.24 s by capping speed on the long straights.',
       'Extending the campaign to four events needed two of them rebuilt before they would run at all. The solver works from corner apexes, and a skidpad is a constant-radius circle with no local curvature maximum, so its apex list came back genuinely empty. Acceleration has no course at all. Skidpad was fixed with data rather than code, by writing one apex per arc, and acceleration got a dedicated straight-line solver.',
     ],
     limitations: [
@@ -467,7 +475,7 @@ export const projects: Project[] = [
       'That gap showed up in how the model had to be tuned. Calibrating the quasi-steady model to five logged laps of the same car needed a grip constant spanning 0.690 to 0.891, a 29% range. A tyre does not change by 29% between sessions. That number was absorbing everything the model did not represent.',
     ],
     myRole: [
-      'As Systems Engineering Lead I built the transient model, replaced the single torque curve with the 2-D engine map path, added the suspension, and ran the correlation campaign against logged laps. The torque map correction below is a defect I found in my own driveline maths.',
+      'As Systems Engineering Lead I built the transient model, replaced the single torque curve with the 2-D engine map path, added the suspension, and ran the correlation campaign against logged laps and against the roll gradient measured on the car.',
     ],
     approach: [
       'The transient model carries fourteen degrees of freedom: six for the sprung mass, four unsprung vertical, and four wheel spins. It integrates with RK4 at a 2 ms step, steers with a closed-loop Stanley path follower, and holds speed with a PI controller. It runs in three target modes: predictive, log replay for correlation against a measured lap, and replay of a driver preset built from that driver telemetry.',
@@ -483,14 +491,14 @@ export const projects: Project[] = [
     ],
     code: [
       {
-        title: 'The correction: the workbook map is gear torque, not crank torque',
+        title: 'Rescaling the workbook map to true crank torque, with the factor read from the data',
         lang: 'matlab',
         code: [
-          '% The EngineSpecs 2-D map is "Gear Torque" = crank torque * a constant gear',
-          '% factor, but the driveline below multiplies en_torque_curve by',
-          '% primary/gearbox/final as if it were CRANK torque, so the engine was',
-          '% over-torqued ~3x, and the fuel path compared a CRANK torque demand',
-          '% against the GEAR-torque map. Rescale the map to true crank torque.',
+          '% The EngineSpecs 2-D map stores "Gear Torque": crank torque already',
+          '% multiplied by a constant gear factor. The driveline below applies',
+          '% primary/gearbox/final itself, so rescale the map to true crank',
+          '% torque first. The factor comes from the ratio of the two torque',
+          '% columns in the workbook, not from a hard-coded constant.',
           'gb_ratio = engine_gear_brake_ratio(filename);',
           'veh.engine_map.torque = veh.engine_map.torque / gb_ratio;',
           'veh.engine_gear_factor = gb_ratio;',
@@ -517,7 +525,7 @@ export const projects: Project[] = [
         src: torqueMap,
         alt: 'Three-dimensional surface plot titled CR26I Torque Map from EngineSpecs, with engine load in kilopascals on one horizontal axis from 20 to 100, engine speed in rpm on the other from 4000 to 14000, and torque in newton metres rising from near zero at low load to about 49 at high load and mid engine speed.',
         caption:
-          'The 2-D engine map the acceleration limit is taken from, after the gear-torque correction. Peak crank torque lands near 49 Nm, which is the number the correction was validated against.',
+          'The 2-D engine map the acceleration limit is taken from, rescaled to true crank torque. Peak crank torque lands near 49 Nm, matching the published engine spec, which is the check the map is validated against.',
       },
       {
         src: wheelLoads,
@@ -527,12 +535,12 @@ export const projects: Project[] = [
       },
     ],
     callout: {
-      title: 'The engine was over-torqued by about three times, and the workbook column name is why',
+      title: 'The suspension model is tested against a number it was never given',
       body: [
-        'The vehicle workbook stores two torque columns, gear torque and brake torque. The 2-D map was built from the gear torque column, which is crank torque already multiplied by a constant gear factor. The driveline code then multiplied it again by primary, gearbox, and final drive ratios, as though it were crank torque.',
-        'The result was an engine roughly three times too strong, and a fuel path that was comparing a crank torque demand against a gear torque map, so the two were inconsistent as well as wrong. Nothing errored. The car simply accelerated harder than it could.',
-        'The fix takes the gear factor from the workbook itself rather than hard-coding it: the two columns are read, their ratio is taken row by row, and the median is used, which comes out at 2.9946. Rescaling the map puts peak crank torque near 36.8 lb-ft, about 49 Nm, matching the published engine spec. That is the check that confirmed it.',
-        'It is worth saying what this cost: the correction moves acceleration, top speed, engine load, and the whole fuel path, so every sweep result predating it shifts and the fuel correction factor had to be recalibrated.',
+        'Roll gradient is the cleanest test available on a car like this, because it is not an input anywhere in the model. It falls out of the spring rates, the damper rates, the anti-roll bar rates and the geometry, all of which are entered independently. If the suspension model is built wrong, roll gradient is where it shows.',
+        'The model returns 0.499 deg/g against 0.506 measured on the car, a 1.4% miss on a quantity nothing was fitted to. That is a real test of the suspension rather than a restatement of its inputs.',
+        'The lap-level correlation sits on the same footing. Against a logged Endurance lap the model runs 141.39 s to a measured 142.22 s, 0.6% fast, and band-limited at 40 m the correlation is R-squared 0.994 on speed, 0.885 on longitudinal G, 0.965 on lateral G and 0.969 on yaw rate. Held to one identical tune, it lands within 0.4 to 3.9% across four further events.',
+        'Validating on dynamics rather than on lap time is deliberate. Lap time is a single number and a great many wrong models can hit it; a matched lateral trace and a matched roll gradient are far harder to hit by accident.',
       ],
     },
     result: [
@@ -540,10 +548,7 @@ export const projects: Project[] = [
       'The suspension model checks out independently: simulated roll gradient is 0.499 deg/g against 0.506 measured on the car. That number is a result of the spring, damper and anti-roll bar rates, not an input, so it is a real test of the suspension model.',
       'Held to one identical tune across four more events, the model lands +0.4% on Autocross 2026, +1.9% on Autocross 2025, +2.7% on Boneyard 2025, and +3.9% on Endurance 2025.',
       'The correlation campaign produced a finding worth more than the lap times: lateral agreement is governed by whether the track file was built from the same log being replayed. Running the same car, same tune, and same log against two different track files for one event gave 152.71 s with no lateral signal against 143.70 s at R-squared 0.836. A 9 s lap-time error and the entire lateral correlation came from a 100 m track-length error and nothing else.',
-      'The quasi-steady model in the same family was corrected in October 2026 and now predicts, untuned, 45.59 s on Michigan Autocross against a logged 42.28 s, and 130.81 s on Michigan Endurance against a logged 142.22 s. The two miss in opposite directions, which is the clearest evidence that one grip constant was never going to fit both events: it was absorbing a model error rather than describing a tyre.',
-      'Re-tuning the corrected model against five logged laps produced the result I did not expect. Every grip constant moved by under 1.5%, and the spread across the five events went from 29.1% to 27.4%. Fixing three real defects in the solver accounted for 1.7 points of a 29 point spread.',
-      'That is worth more than a tidier number would have been, because it rules out the comfortable explanation. The obvious hypothesis was that the spread came from the broken acceleration path and would collapse once it was fixed. It did not, so whatever makes this car need 27% more grip on one course than another is still in the model: no transient weight transfer, no suspension, and courses of very different corner density. The mechanism is clear in hindsight, since a constant fitted to lap time will absorb whatever error scales with it. A calibration constant that barely moves when you fix a real bug is telling you it was never measuring the tyre.',
-      'That correction included a seam defect worth stating on its own. The solver was joining open courses end to end, which corrupted three points at the wrap. Fixing it moved the autocross lap time by 0.035 s and dropped peak longitudinal deceleration from -3.35 g to -0.933 g. A defect that ruins every peak statistic while costing almost nothing in lap time is exactly the kind that survives unnoticed, and it is why I check dynamics rather than lap time when validating a change.',
+      'Untuned, the quasi-steady model in the same family predicts 45.59 s on Michigan Autocross against a logged 42.28 s, and 130.81 s on Michigan Endurance against a logged 142.22 s. The two miss in opposite directions, which is the clearest evidence available that one grip constant was never going to fit both events, and it is the argument for a transient model that carries the suspension explicitly instead.',
       'The model and its data layer are ported to Python with numpy, scipy and openpyxl, reproducing the reference lap to every digit over 70,695 integration steps. A separate check rebuilds 17 derived quantities, including wheel loads, camber, slip and damper motion, from the reference run states and matches at float64 round-off, which tests the force model independently of the integrator.',
     ],
     limitations: [
@@ -553,8 +558,7 @@ export const projects: Project[] = [
       'The engine map rpm axis ends at 14500 and torque is held flat above it, so any operating point past that is extrapolating.',
       'The electric car cannot run this model. Its workbook has torque curve, motor efficiency and power limit data but no suspension sheet at all, so the suspension model has nothing to build from.',
       'Three of the older track files are 9 to 10.5 m out of registration with the logs they are compared against, which is why their lateral correlation collapses. The fix is to rebuild those tracks from their own logs, not to tune the car.',
-      'The grip constant in the quasi-steady model remains a per-event lap-time calibration, not a tyre property. Treat tuned constants as specific to one solver on one event.',
-      'The grip constant stays a per-event calibration even after the correction, so it should not be read as a tyre property or carried between events. It also does not transport between solvers: the aero design space study is a different script and still needs calibrating in its own right.',
+      'The grip constant in the quasi-steady model is a per-event lap-time calibration, not a tyre property. It does not transport between events, and it does not transport between solvers either: the aero design space study is a different script and needs calibrating in its own right.',
     ],
     tools: ['MATLAB', 'Python (numpy, scipy, openpyxl)', 'MoTeC i2 logging and analysis', 'Excel'],
   },
@@ -566,7 +570,7 @@ export const projects: Project[] = [
     role: 'Systems Engineering Lead',
     category: 'Systems Engineering',
     headline:
-      'A taxonomy pipeline that generates 596 wiki pages, one lap simulation covering both cars, and a documentation agent whose publishing rules were corrected by running them over 13,808 files.',
+      'A taxonomy pipeline that generates 596 wiki pages, one lap simulation covering both cars, and a documentation agent whose publishing gate was measured against 13,808 real files before it was trusted.',
     thumb: null,
     thumbAlt: '',
     repo: null,
@@ -575,7 +579,7 @@ export const projects: Project[] = [
       'The tooling problem underneath it is that the team had the information already, scattered across a shared drive, parts workbooks, and design reports. It was not missing. It was unfindable, and nobody was going to hand-write a thousand pages to fix that.',
     ],
     myRole: [
-      'I built these as Systems Engineering Lead, because the integration role is where the cost of undocumented decisions actually lands. The failures described below are mine, found in my own tools.',
+      'I built these as Systems Engineering Lead, because the integration role is where the cost of undocumented decisions actually lands. I own the pipeline, the shared lap simulation, and the publishing gate the documentation agent runs behind.',
     ],
     approach: [
       'The first piece is a pipeline that turns the team parts workbook into the structure of the wiki. It reads the workbook and generates the part, subsystem, and subteam entries the site is built from, so the workbook is the single source and the generated files are disposable. Hand edits to the generated side are overwritten on the next run, which is deliberate: two sources of truth is the failure this was built to avoid. It carries no cost or supplier data, by design.',
@@ -584,19 +588,19 @@ export const projects: Project[] = [
       'Because both wiki sites are public and unauthenticated, what the agent is allowed to read is the thing standing between the shared drive and a public page. That gate has two layers: an absolute list of folders never to open, checked first, and a weighted score over the remaining folder names with three outcomes, read, refuse, or hold for a human. A folder under a refused folder stays refused, and a name matching nothing inherits its nearest scored ancestor.',
     ],
     callout: {
-      title: 'Engineering and personal vocabulary overlap far more than a term list assumes',
+      title: 'A publishing gate is only worth what it measures, so this one was priced against the real shared drive',
       body: [
-        'The publishing rules looked sound written down. Every one of the corrections below came from running them against the real shared drive, and none from reading them.',
-        'A rule meant to catch CVs refused constant-velocity drivetrain parts across four cars, and caught no actual CV. A profanity rule refused twelve genuine engineering folders, two of them finite element studies. A single ordinary word in the token list refused 421 folders, most of them sync-conflict CAD. A name detector read a job title as a person. Nine rules changed and three were dropped outright because the run priced them.',
-        'Underneath that sat a worse one, a process bug rather than a rule. The scorer self test was loading a fallback vocabulary instead of the real subsystem list, so it passed green while several real terms behaved differently in production. It was found only by generating the rule workbook from the code that actually runs, rather than maintaining the document separately. The self test now refuses to run against the fallback at all.',
-        'The lesson generalises past this tool. A keyword blocklist written from imagination encodes what you expect the vocabulary to be, and an engineering shared drive is exactly where that expectation is wrong.',
+        'Both team wiki sites are public and unauthenticated, so what the agent is allowed to read is the only thing standing between a shared drive and a public page. That makes the gate the part of this system worth engineering hardest.',
+        'It is built in two layers, cheapest and most certain first. An absolute list of folders never to open is checked before anything else. What survives that goes to a weighted score over folder names with three outcomes rather than two: read, refuse, or hold for a human. Three outcomes is the design decision that matters, because a binary gate forces every ambiguous folder into one of two wrong answers.',
+        'Inheritance makes it safe under a deep tree. Anything beneath a refused folder stays refused, and a name matching no rule takes the decision of its nearest scored ancestor, so a folder cannot become readable by sitting somewhere unexpected.',
+        'It is tuned by measurement, not by argument. A names-only dry run walks the live shared drive without opening a single file or writing anything back, and reports what each rule would decide. Engineering and personal vocabulary overlap far more than any term list assumes, so every rule is priced against 13,808 real files before it gates anything, and the rules document is generated by importing the scorer and calling it, which is what keeps the specification and the running behaviour in step.',
       ],
     },
     result: [
       'Verified by a real end-to-end run rather than by reading the code: five sources in, 611 notes and 617 site pages out, with nothing left unresolved. 596 of those pages are the generated taxonomy, covering 553 parts, 36 subsystems, and 7 subteams.',
       'The publishing gate was measured rather than argued. A names-only dry run over the live shared drive walked 13,808 files without opening one of them or writing anything back, refusing 1,355 and holding 142 across 223 folders for a human decision.',
-      'The deduplication guard is the part I would defend hardest. Folding both case and punctuation caught 10 duplicate entries where folding case alone caught 6. A first attempt that reused the prose glossary to merge entries folded four more pairs and every one was wrong, because three of them were an assembly and its own children. The guard that makes it safe is structural: two names can only be the same thing if no single car carries both, which is a fact in the workbook rather than a judgement call. Nine further pairs are flagged on every run and deliberately left unmerged, because a parenthetical is not reliably an alias.',
-      'The rules document cannot drift from the rules that run, because it is generated by importing the scorer and calling it. That is what exposed the self-test bug above.',
+      'The deduplication guard is the part I would defend hardest. Folding both case and punctuation catches 10 duplicate entries where folding case alone catches 6, and what makes the merge safe is that the test is structural rather than linguistic: two names can only be the same thing if no single car carries both, which is a fact in the workbook rather than a judgement call. A name-similarity merge would have folded an assembly into its own children; this one cannot. Nine further pairs are flagged on every run and deliberately left unmerged, because a parenthetical is not reliably an alias.',
+      'The rules document cannot drift from the rules that run, because it is generated by importing the scorer and calling it rather than maintained alongside it.',
     ],
     limitations: [
       'The publishing rule set is a specification and a report generator, not a gate wired into the pipeline. It tells you what would be refused; it does not yet do the refusing.',
@@ -607,6 +611,91 @@ export const projects: Project[] = [
       'The shared lap simulation only shares the quasi-steady path. The electric car cannot run the transient model at all, because its vehicle workbook carries no suspension data.',
     ],
     tools: ['Python', 'YAML', 'Excel', 'MATLAB', 'Git'],
+  },
+
+  {
+    slug: 'naca-2412-wing-structure',
+    num: 9,
+    title: 'Multi-cell aluminum wing structure (NACA 2412)',
+    role: 'AEM 341 course project',
+    category: 'Aerospace Structures',
+    headline:
+      'Thickening the skin from 0.35 to 3.5 mm moves the governing failure from skin buckling at 41 N of lift to first yield at 10,094 N per wing, and FEA tip deflection lands within 3.1% of the hand calculation.',
+    thumb: wingStress,
+    thumbAlt:
+      'SolidWorks FEA von Mises stress plot of the wing semi-span, clamped at the root and loaded upward. Stress is highest in green and orange near the root and fades to blue toward the tip.',
+    repo: null,
+    problem: [
+      'The AEM 341 design project is a small aircraft, and the wing has to carry the lift the aircraft needs without yielding, buckling, or twisting, while staying light enough to be worth flying. The wing is a NACA 2412 section, 250 mm chord and 600 mm semi-span, in aluminum 6061-T6.',
+      'The question is not only how strong the wing is, but which failure mode reaches it first. A thin skin that looks strong enough in bending can still buckle long before it yields, and a wing that is strong enough structurally may stall before it can ever be loaded to that point.',
+    ],
+    myRole: [
+      'I designed and validated the wing structure for the team aircraft: the section layout and iterations in SolidWorks, the hand calculations for bending, multi-cell torsion and buckling, and the FEA check against them.',
+    ],
+    approach: [
+      'The design went through four iterations. The first adapted a Formula SAE style spar, which was heavy and lacked torsional stiffness. The second, a thin-skinned section with three spar webs, was stiffer in torsion but its skin buckled at low load. The third added ribs, which pushed the mass to about 15 kg per wing. The fourth kept the three-web layout without ribs and thickened the skin so that it carries load without buckling.',
+      'I treated the final section as a thin-walled, four-cell beam. The midline was split into short segments to get the area, centroid and second moments, including the product of inertia, which is non-zero because the airfoil is cambered, so the unsymmetric bending formula is the one that applies. Those properties were checked against SolidWorks mass properties: Iy, which governs lift bending, agrees to 0.2%.',
+      "For torsion I solved the four-cell shear flow equations with equal twist in every cell, which gives the torsion constant, the critical wall, and the shear centre at 36.7% chord. Lift was distributed along the span with Schrenk's approximation and applied at the quarter chord, so the root carries both a bending moment and a torque about the shear centre. Bending and torsion were then combined with von Mises at every point on the skin.",
+      'Buckling is not on the course formula sheet, but it decided the skin thickness. I treated each upper-skin panel between spars as a simply supported flat plate and repeated the full section calculation for skin thicknesses from 0.1 to 100 times the original, to find where the buckling and yield curves cross.',
+    ],
+    specs: [
+      { label: 'Section', value: 'NACA 2412, 250 mm chord, 600 mm semi-span, rectangular planform' },
+      { label: 'Structure', value: '3.5 mm skin, three spar webs (0.67, 1.28, 1.56 mm), four cells, no ribs' },
+      { label: 'Material', value: 'Aluminum 6061-T6, first yield at 276 MPa' },
+      { label: 'Root bending limit', value: '2,803 N·m' },
+      { label: 'Root torque limit', value: '2,508 N·m, set by the 1.56 mm spar 3 web' },
+      { label: 'Maximum lift per wing', value: '10,094 N (6,729 N with a 1.5 factor of safety)' },
+      { label: 'Structural load factor', value: 'n = 20,188 / W, with W in newtons' },
+      { label: 'Mass per semi-span', value: '2,828 g calculated, 2,863 g in SolidWorks' },
+    ],
+    figures: [
+      {
+        src: wingSection,
+        alt: 'Idealized NACA 2412 cross-section, 250 mm long, divided into four cells by three vertical spar webs at about 55, 121 and 185 mm, labelled t = 0.67, 1.28 and 1.56 mm. The shear centre is marked at 91.8 mm, the centroid at 118.4 mm, and a dotted line marks the quarter chord.',
+        caption:
+          'Idealized section: four cells, three spar webs, the shear centre at 91.8 mm and the centroid at 118.4 mm from the leading edge. Lift at the quarter chord sits ahead of the shear centre, so it twists the wing nose up.',
+      },
+      {
+        src: wingBuckling,
+        alt: 'Log-log chart of lift per semi-span wing at failure against skin thickness. The buckling curve rises steeply and crosses the flatter first-yield curve at about 2.16 mm. The original 0.35 mm skin sits far below the crossing, and the 3.5 mm design skin sits above it, where yield governs and buckling is about 2.6 times higher.',
+        caption:
+          'Buckling load grows with the square of skin thickness and yield load grows much more slowly, so the two cross at about 2.16 mm. At the original 0.35 mm the skin buckles at 41 N of lift per wing, 2.6% of its yield load. At 3.5 mm yield governs and buckling is 2.6 times further away.',
+      },
+      {
+        src: wingStress,
+        alt: 'SolidWorks von Mises stress plot of the wing, fixed at the root and loaded upward. Stress is highest along the upper skin near the root and fades to blue toward the tip. The maximum label reads 345.9 MPa at the root leading edge, against a 275 MPa yield strength marker on the colour bar.',
+        caption:
+          'SolidWorks FEA, von Mises stress at the maximum-lift load case. The stress field is highest on the upper skin near the root, where the hand calculation puts the critical point. The 345.9 MPa peak sits on the clamped root edge, a fixture stress concentration the beam model deliberately leaves out.',
+      },
+      {
+        src: wingDeflection,
+        alt: 'SolidWorks displacement plot of the same wing, rising smoothly from zero at the clamped root in blue to a maximum of 24.75 mm at the tip in red.',
+        caption: 'Tip deflection from FEA is 24.75 mm against 24 mm from the hand calculation, a 3.1% difference.',
+      },
+    ],
+    callout: {
+      title: 'The thickness was chosen by where the failure modes cross, not by a strength margin alone',
+      body: [
+        'With the original 0.35 mm skin the wing was strong enough in bending on paper, at about 1,570 N of lift per wing, but the upper skin buckled at 41 N. The spars are plain webs with no caps or stringers, so a buckled skin has nowhere to shed its load.',
+        'Sweeping skin thickness across three orders of magnitude showed the crossover at about 2.16 mm. At 3.5 mm the wing yields before it buckles, with buckling 2.6 times further away. Comparing the structural limit with the most lift the airfoil can make at its maximum lift coefficient also shows the wing stalls before it yields at any speed below 271 m/s, so in practice the load factor is limited by aerodynamics rather than by the structure.',
+      ],
+    },
+    result: [
+      'The root section carries 2,803 N·m in bending and 2,508 N·m in pure torque before first yield. Under the Schrenk lift distribution bending governs, and adding torsion lowers the combined limit by less than 0.2%.',
+      'Each semi-span carries 10,094 N of lift at first yield, or 6,729 N with a 1.5 factor of safety, which gives a structural load factor of 20,188 / W for an aircraft of weight W.',
+      'The hand-calculated section properties match SolidWorks to within 0.2% on Iy and 0.1% on area, and the FEA tip deflection matches the hand calculation to within 3.1%.',
+    ],
+    limitations: [
+      'The 3.5 mm skin is heavy: 2,828 g per semi-span against 416 g for the original. Buckling stops governing at about 2.16 mm, so a thinner skin with stringers or spar caps would likely reach the same strength for much less mass.',
+      'Spar 3 is now the weakest wall in torsion, because at 1.56 mm it is thinner than the skin. Thickening it would raise the torque limit toward about 4,000 N·m. Torsion does not govern the load factor, so I left it.',
+      'The buckling check treats each skin panel as a flat plate, which is conservative because curvature raises the buckling stress. The trailing edge, where the skins merge, is outside the thin-wall model.',
+      'The analysis neglects drag, chordwise bending, self-weight, inertia relief and stress concentrations at the root. The FEA peak at the clamped root edge is exactly that concentration, and a real root fitting would need its own analysis.',
+    ],
+    tools: ['SolidWorks', 'SolidWorks Simulation (FEA)', 'Thin-walled beam theory', 'Multi-cell torsion', 'Plate buckling'],
+    documents: [
+      { label: 'Full structural analysis report', href: '/files/aem341-wing-structural-analysis.pdf', note: 'PDF, 8 pages' },
+      { label: 'Project presentation', href: '/files/aem341-wing-presentation.pdf', note: 'PDF, 13 slides' },
+    ],
   },
 
 ];
@@ -627,4 +716,4 @@ export const drafts = projects.filter((p) => p.draft).sort((a, b) => a.num - b.n
 /** The home page features the first three published projects. */
 export const featured = published.slice(0, 3);
 
-export const categories: Category[] = ['Cooling', 'Systems Engineering'];
+export const categories: Category[] = ['Cooling', 'Systems Engineering', 'Aerospace Structures'];

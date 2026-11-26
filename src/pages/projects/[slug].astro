@@ -115,6 +115,22 @@ const { project, prev, next } = Astro.props;
       </ul>
 
       {
+        project.documents && (
+          <>
+            <h2>Documents</h2>
+            <ul>
+              {project.documents.map((doc) => (
+                <li>
+                  <a href={url(doc.href)}>{doc.label}</a>
+                  {doc.note && <> ({doc.note})</>}
+                </li>
+              ))}
+            </ul>
+          </>
+        )
+      }
+
+      {
         project.repo && (
           <p>
             <a href={project.repo}>Source repository</a>

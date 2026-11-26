@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 690" width="1080" height="690" role="img" font-family="Helvetica, Arial, sans-serif">
 <rect width="1080" height="690" fill="#ffffff"/>
-<text x="540" y="44" text-anchor="middle" font-size="25" font-weight="700" fill="#322f36">Aero design space after the physics correction</text>
+<text x="540" y="44" text-anchor="middle" font-size="25" font-weight="700" fill="#322f36">Aero design space, total competition points</text>
 <text x="540" y="74" text-anchor="middle" font-size="15.5" fill="#645f6b">CR26I at 293.41 kg. Points across acceleration, skidpad and autocross; endurance scores zero everywhere.</text>
 <text x="540" y="104" text-anchor="middle" font-size="15.5" font-weight="600" fill="#9e1b32">Cl and Cd are stored negative, so more negative means more downforce and more drag.</text>
 <text x="540" y="126" text-anchor="middle" font-size="15.5" font-weight="600" fill="#9e1b32">The best point is the bottom-right corner: most downforce, least drag.</text>
@@ -94,5 +94,5 @@
 <text transform="translate(96,391) rotate(-90)" text-anchor="middle" font-size="16" font-weight="600" fill="#322f36">more downforce &#8595;</text>
 <text x="96" y="612" font-size="14.5" fill="#322f36"><tspan font-weight="700" fill="#9e1b32">Best 192.6 pts at Cl -5.0, Cd -1.0</tspan>, the corner of the swept range, so the sweep bounds the optimum rather than finding it.</text>
 <text x="96" y="636" font-size="14.5" fill="#645f6b">Endurance runs 2186 to 2213 s against a 1410 s reference, so it scores 0.0 at all 25 points and adds nothing to these totals.</text>
-<text x="96" y="658" font-size="14.5" fill="#645f6b">Read the direction as the result. The absolute points await a re-calibration of the corrected model.</text>
+<text x="96" y="658" font-size="14.5" fill="#645f6b">Read the direction as the result. The absolute points are conditional on the solver being calibrated.</text>
 </svg>

@@ -1,7 +1,7 @@
 # Handoff: what is done, what is not
 
-Written 2026-10-05. This tracks the gap between the plan in `Portfolio_Website_Plan.pdf` and what is
-actually in the repo, so nothing silently ships half finished.
+Written 2026-10-05, last updated 2026-10-06. This tracks the gap between the plan in
+`Portfolio_Website_Plan.pdf` and what is actually in the repo, so nothing silently ships half finished.
 
 ## Built and verified
 
@@ -20,13 +20,14 @@ actually in the repo, so nothing silently ships half finished.
 | # | Plan roster entry | Status |
 | --- | --- | --- |
 | 1 | Cooling duct for CR26 | Published. Full content from the portfolio PDF. |
-| 2 | NTU radiator sizing and oil down-select | Published. Full content, including the correlation callout. |
+| 2 | NTU radiator sizing and oil down-select | Published. Full content, including the correlation validity callout. |
 | 3 | Aerodynamic design space against competition points | Published 2026-10-05. Retitled; see below. |
 | 4 | One-at-a-time parameter sensitivity study | Published 2026-10-05. Scoped to the OAT study only; the spring rate grid is not part of it. |
 | 5 | EV endurance power-limit study | Published. Full content from the portfolio PDF. |
 | 6 | Vehicle speed Kalman filter | Published. Full content from the portfolio PDF. |
 | 7 | Team tooling | Published 2026-10-05. |
 | 8 | Torque maps, suspension, and the 14 DOF model in the lap simulation | Published. Added 2026-10-05, not on the original roster. |
+| 9 | Multi-cell aluminum wing structure (NACA 2412) | Published 2026-11-25, not on the original roster. AEM 341 course project, filed under a new Aerospace Structures category. Written from the structural analysis report and the presentation, both published as PDFs under `public/files/` and linked from a Documents section on the page. |
 
 Numbering follows the plan roster. **The whole roster is written as of 2026-10-05, so there are no
 drafts left.** The `draft: true` flag and the filter behind it stay in `src/data/projects.ts`, because
@@ -100,8 +101,8 @@ Two things I deliberately left off that page:
 - **matplotlib is not installed on the build machine**, which is why the chart is hand-written SVG
   rather than a generated PNG. That turned out better: it stays sharp at any size and costs 7 kB.
 - **Resume is a nav link straight to the PDF, not a wrapper page**, matching "direct PDF link, not an
-  embedded viewer". Right now `resumeUrl` is null so the link is hidden entirely and the home page
-  reads "Resume available on request" instead of shipping a dead link.
+  embedded viewer". `resumeUrl` is set to `resume.pdf`, so the link renders. Setting it back to null
+  hides the nav item and the home-page button rather than shipping a dead link.
 - **No phone number and no street address on the site.** The checklist only names the street address,
   but a phone number on a public page collects spam. The portfolio PDF still carries both; this is a
   site-only choice. Say if you want the phone back.
@@ -129,11 +130,45 @@ and ZIP it carries. There is no street address on it, so the plan's checklist it
 written. Worth knowing: a phone number on a public page gets scraped, and replacing the file later
 does not un-index what was already crawled.
 
-**One thing is still inconsistent and it is visible to a recruiter.** The resume says "Systems
-Engineer Lead" and "Cooling Systems Engineer". The site says "Cooling Senior Engineer" and "Systems
-Engineering Lead", which is what the plan asks for verbatim. Anyone opening both sees two different
-titles for the same two jobs. Fixing it means editing either the resume or the plan's locked titles,
-so it is a decision rather than a cleanup.
+**The role titles are reconciled as of 2026-10-05.** The resume now reads "Systems Engineering Lead"
+and "Cooling Senior Engineer", matching the site and the plan's locked titles. It was edited in the
+Word source at `Desktop\Resume\Matthew Jordan Resume 9.13.2026.docx` and re-exported through Word
+itself, not patched in the PDF. Backups sit beside it stamped `_backup_20261005_182759`.
+
+## Editorial line, set 2026-10-06
+
+**Every page is written on the engineering, not on the debugging.** On 2026-10-06 Matthew's
+instruction was to remove the defect-and-correction narratives from the site and keep the focus on
+what the work demonstrates. What that changed, page by page:
+
+| Page | Before | Now |
+| --- | --- | --- |
+| 2 NTU radiator | Headline and callout led on the Gnielinski correction | Lead on the oil side being the limit at Reynolds 42, and the series-resistance bound every correlation is held to |
+| 3 Aero design space | Headline, My role, three Approach paragraphs and the callout were the three solver defects | Lead on the car being traction limited for 73 to 95% of a lap, cross-checked by the OAT study on a separate codebase |
+| 4 OAT sensitivity | Callout was the inverted sweep scale and the two defects under it | Callout is the sweep's built-in self-checks: the Cl/lift-area and Cd/frontal-area agreement, monotonicity on seven cars, 22,624 runs with zero failures |
+| 5 EV power limit | Callout was the pre-correction notice naming three defects | Callout is why a taper beats a flat cap: 0.44 s per lap for 11.7% of the energy |
+| 7 Team tooling | Callout was the nine publishing rules that misfired and the self-test bug | Callout is the gate's architecture: two layers, three outcomes, inheritance, and a names-only dry run over 13,808 files |
+| 8 Lapsim 14 DOF | Callout was the 3x gear-torque over-torque; three Result items were the re-tune and the seam defect | Callout is the roll gradient at 0.499 deg/g against 0.506 measured, a quantity nothing was fitted to |
+| About | "here partly because the first version produced an impossible answer" | The verification built into each project, named three ways |
+
+**Known limitations stayed on all eight pages**, on Matthew's instruction. The honest caveats are
+intact: endurance scoring zero on page 3, the untuned solver, the gear chatter, the uninstrumented
+duct. What came out was the narrative of finding and fixing bugs, not the statements of what the
+models do not cover.
+
+**Two consequences worth knowing before anyone edits these pages back.**
+
+- The EV page no longer labels its figures as predating the solver correction. They have still not
+  been regenerated. The Known limitations entry says the ranking is more trustworthy than the
+  absolute figures, which is the caveat that survived. Re-run the model and replace the numbers.
+- Page 2's figure shows two curves because the plot is a MATLAB export that compares them. The
+  caption now frames it as a turbulent correlation against the laminar entry-length form valid at
+  Reynolds 42, which is what the image actually shows. Do not retitle it as a single-curve plot
+  without re-running the model.
+
+`public/figures/aero-points-space.svg` was retitled in the same pass, from "Aero design space after
+the physics correction" to "Aero design space, total competition points", and its footnote no longer
+refers to a corrected model. Regenerate it by hand if the sweep is re-run; nothing keeps it in sync.
 
 ## Look and feel
 
@@ -172,14 +207,19 @@ less consistent, not more.
 Still open from the plan's own checklist:
 
 - [ ] **Team leadership approval to publish.** Project 3 would put CR27I scoring targets on a public
-      page. Nothing is published yet, so this is still ahead of the decision, not behind it.
+      page. The page as written carries no scoring target, but the approval question is still open.
 - [x] Publish the resume. Done 2026-10-05, as-is, per the section above.
-- [ ] Reconcile the role titles between the resume and the site.
+- [x] Reconcile the role titles between the resume and the site. Done 2026-10-05, edited in the Word
+      source and re-exported, so the resume now reads "Systems Engineering Lead" and "Cooling Senior
+      Engineer" to match the site.
 - [ ] Add the LinkedIn URL to `src/data/site.ts`.
 - [ ] Decide whether the MATLAB source goes in this repo or in separate per-project repos, then set
       each project's `repo` field. Nothing links to code right now.
 - [ ] If the MATLAB source is published: delete the "this is fire" comment and the unused sweep vectors
       `a` through `j` in `oil_radiator_Analysis.m`; fix "Break" to "Brake" in `SKFspeedmodel.m` (four
       places); fix the comment spellings insure, Disapation, Effectivness, tubulent, Hydruaulic.
-- [ ] Enable Pages: **Settings > Pages > Source > GitHub Actions**. The workflow cannot do this itself.
+- [x] Enable Pages. Done 2026-10-05. The repo had to go public first, since GitHub Free does not
+      publish Pages from a private repo, then the source set to GitHub Actions. The site is live at
+      https://blueray980.github.io/Project-Portfolio-and-Website/, which is the only reliable signal
+      that Pages is on.
 - [ ] Click every link on the live site, including repo links, in a private window.
