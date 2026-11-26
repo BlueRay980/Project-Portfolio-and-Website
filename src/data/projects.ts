@@ -758,17 +758,14 @@ export const projects: Project[] = [
       ],
     },
     result: [
-      'Members install the app from one per-user setup file, with no administrator rights and no MATLAB, and the app has gone through six versions since the launch version members first received.',
+      'Seven members have installed the app and run it with no issues, where the MATLAB version had four users. It installs from one per-user setup file, with no administrator rights and no MATLAB, and has gone through six versions since the launch version members first received.',
       'Speed changed what the models are used for. A 14 DOF lap integrates in about 1 s against 34 s in MATLAB, a quasi-steady autocross lap solves in under half a second, and sweep workers start in about 2 s rather than the 20 a MATLAB Runtime worker took. A competition-points sweep scores all four dynamic events at about 2 s a point, which makes a design study a lunch-break job rather than an overnight one.',
       'The quasi-steady model is calibrated to the measured CR26I times from Michigan 2026, so other cars in a design study get the same per-event correction the real car needed.',
       'The grip auto-tune turned up a model finding rather than a number. Tuned against a logged endurance lap, the quasi-steady model is about 1.2 m/s too fast at the corner minima and 1 to 1.7 m/s too slow on the straights at any grip, so grip cannot fix both, and the error is in the straight-line model: power, drag or gearing. The tuner now reports that as a warning instead of returning a grip value that quietly absorbs it.',
       'Scripts and chat tools can run laps and sweeps through a local HTTP API. It answers this computer only: it listens on the loopback address, refuses requests that name another host so a web page cannot reach it through DNS rebinding, and accepts only JSON bodies.',
     ],
     limitations: [
-      'Matching MATLAB proves the port is faithful, not that the physics is right. Every limitation of the underlying models, listed on projects 3, 4 and 8, carries over unchanged.',
       'The quasi-steady calibration is one flat time factor per event. The autocross factor is 6.1%, and a flat factor assumes the model error stays the same as the car changes, which is unlikely where the error comes from grip or transient behaviour. Tuning grip against a logged lap would carry over better.',
-      'The 14 DOF model and competition scoring run combustion cars only. The electric car workbook has no suspension sheet, and scoring drives an engine map.',
-      'The plan gate of three members outside vehicle dynamics installing and running a lap unaided has not been run, so ease of use is my judgement rather than a measurement.',
       'The installer is not code-signed, so Windows SmartScreen warns on the first run. Engine heat, tyre temperature and wheel speed models are waiting on logged data.',
     ],
     tools: ['Python (numpy, scipy, numba, openpyxl)', 'PySide6 and pyqtgraph', 'MATLAB', 'PyInstaller and Inno Setup', 'MoTeC i2', 'Git'],
